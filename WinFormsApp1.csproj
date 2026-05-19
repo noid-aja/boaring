@@ -9,7 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="LiveCharts.WinForms" Version="0.9.7.1" />
     <PackageReference Include="Npgsql" Version="10.0.2" />
+    <PackageReference Include="WInforms.DataVisualization" Version="1.10.2" />
   </ItemGroup>
 
   <ItemGroup>

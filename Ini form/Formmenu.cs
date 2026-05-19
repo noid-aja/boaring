@@ -57,11 +57,13 @@ namespace WinFormsApp1
 
         private void btn1_Click(object sender, EventArgs e)
         {
+            openChildForm(new Form3());
             hideSubMenu();
         }
 
         private void btn2_Click(object sender, EventArgs e)
         {
+            openChildForm(new Form2());
             hideSubMenu();
         }
 
@@ -73,6 +75,26 @@ namespace WinFormsApp1
         private void btn4_Click(object sender, EventArgs e)
         {
             hideSubMenu();
+        }
+
+        private Form activeForm = null;
+        private void openChildForm(Form child)
+        {
+            if (activeForm != null)
+                activeForm.Close();
+            activeForm = child;
+            child.TopLevel = false;
+            child.FormBorderStyle = FormBorderStyle.None;
+            child.Dock = DockStyle.Fill;
+            panelmain.Controls.Add(child);
+            panelmain.Tag = child;
+            child.BringToFront();
+            child.Show();
+        }
+
+        private void panelmain_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

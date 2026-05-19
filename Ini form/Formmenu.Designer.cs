@@ -37,7 +37,7 @@
             btn1 = new Button();
             btnmenu = new Button();
             panel2 = new Panel();
-            panel3 = new Panel();
+            panelmain = new Panel();
             pnlmenu.SuspendLayout();
             pnl1.SuspendLayout();
             SuspendLayout();
@@ -110,7 +110,7 @@
             btn2.Padding = new Padding(25, 0, 0, 0);
             btn2.Size = new Size(200, 41);
             btn2.TabIndex = 1;
-            btn2.Text = "Comming Soon";
+            btn2.Text = "Pamer datagrid";
             btn2.TextAlign = ContentAlignment.MiddleLeft;
             btn2.UseVisualStyleBackColor = true;
             btn2.Click += btn2_Click;
@@ -126,7 +126,7 @@
             btn1.Padding = new Padding(25, 0, 0, 0);
             btn1.Size = new Size(200, 41);
             btn1.TabIndex = 0;
-            btn1.Text = "Comming Soon";
+            btn1.Text = "ini ada chart";
             btn1.TextAlign = ContentAlignment.MiddleLeft;
             btn1.UseVisualStyleBackColor = true;
             btn1.Click += btn1_Click;
@@ -148,27 +148,31 @@
             // 
             // panel2
             // 
+            panel2.BackColor = SystemColors.ActiveCaption;
             panel2.Dock = DockStyle.Top;
             panel2.Location = new Point(0, 0);
             panel2.Name = "panel2";
             panel2.Size = new Size(200, 78);
             panel2.TabIndex = 1;
             // 
-            // panel3
+            // panelmain
             // 
-            panel3.Location = new Point(510, 173);
-            panel3.Name = "panel3";
-            panel3.Size = new Size(8, 8);
-            panel3.TabIndex = 1;
+            panelmain.BackgroundImage = (Image)resources.GetObject("panelmain.BackgroundImage");
+            panelmain.BackgroundImageLayout = ImageLayout.Stretch;
+            panelmain.Dock = DockStyle.Fill;
+            panelmain.Location = new Point(200, 0);
+            panelmain.Name = "panelmain";
+            panelmain.Size = new Size(842, 506);
+            panelmain.TabIndex = 1;
+            panelmain.Paint += panelmain_Paint;
             // 
             // Formmenu
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1042, 506);
-            Controls.Add(panel3);
+            Controls.Add(panelmain);
             Controls.Add(pnlmenu);
             Name = "Formmenu";
             Text = "Formmenu";
@@ -189,5 +193,6 @@
         private Button btn3;
         private Button btn2;
         private Button btn1;
+        private Panel panelmain;
     }
 }
