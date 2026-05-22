@@ -113,6 +113,7 @@
             btnhapus.TabIndex = 7;
             btnhapus.Text = "Hapus";
             btnhapus.UseVisualStyleBackColor = true;
+            btnhapus.Click += btnhapus_Click;
             // 
             // btnedit
             // 
