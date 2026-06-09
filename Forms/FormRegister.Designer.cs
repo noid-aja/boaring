@@ -28,7 +28,7 @@
             // 
             // txtname
             // 
-            txtname.Location = new Point(415, 352);
+            txtname.Location = new Point(412, 252);
             txtname.Name = "txtname";
             txtname.Size = new Size(339, 39);
             txtname.TabIndex = 0;
@@ -36,7 +36,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(415, 303);
+            label1.Location = new Point(412, 203);
             label1.Name = "label1";
             label1.Size = new Size(119, 32);
             label1.TabIndex = 3;
@@ -45,7 +45,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(415, 555);
+            label2.Location = new Point(412, 575);
             label2.Name = "label2";
             label2.Size = new Size(113, 32);
             label2.TabIndex = 5;
@@ -53,7 +53,7 @@
             // 
             // txtpassword
             // 
-            txtpassword.Location = new Point(415, 603);
+            txtpassword.Location = new Point(412, 623);
             txtpassword.Name = "txtpassword";
             txtpassword.PasswordChar = '*';
             txtpassword.Size = new Size(339, 39);
@@ -63,7 +63,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(415, 672);
+            label3.Location = new Point(412, 692);
             label3.Name = "label3";
             label3.Size = new Size(202, 32);
             label3.TabIndex = 7;
@@ -71,7 +71,7 @@
             // 
             // txtcpassword
             // 
-            txtcpassword.Location = new Point(415, 723);
+            txtcpassword.Location = new Point(412, 743);
             txtcpassword.Name = "txtcpassword";
             txtcpassword.PasswordChar = '*';
             txtcpassword.Size = new Size(339, 39);
@@ -105,7 +105,7 @@
             // label10
             // 
             label10.AutoSize = true;
-            label10.Location = new Point(415, 434);
+            label10.Location = new Point(412, 454);
             label10.Name = "label10";
             label10.Size = new Size(72, 32);
             label10.TabIndex = 11;
@@ -113,7 +113,7 @@
             // 
             // txtemail
             // 
-            txtemail.Location = new Point(415, 483);
+            txtemail.Location = new Point(412, 503);
             txtemail.Name = "txtemail";
             txtemail.Size = new Size(339, 39);
             txtemail.TabIndex = 10;

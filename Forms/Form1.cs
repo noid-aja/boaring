@@ -32,14 +32,14 @@ namespace WinFormsApp1
 
             using (NpgsqlConnection conn = ConnectDB.GetConn())
             {
-                string query = @"SELECT COUNT(*) FROM users 
-                                 WHERE nama = @nama 
-                                 AND password_hash = @pass
+                string query = @"SELECT COUNT(*) FROM kapten.users 
+                                 WHERE username = @username 
+                                 AND password = @pass
                                  AND is_aktif = TRUE";
 
                 using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@nama", nama);
+                    cmd.Parameters.AddWithValue("@username", nama);
                     cmd.Parameters.AddWithValue("@pass", password);
 
                     int count = Convert.ToInt32(cmd.ExecuteScalar());
