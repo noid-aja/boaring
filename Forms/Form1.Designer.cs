@@ -40,7 +40,7 @@
             // tbusr
             // 
             tbusr.Location = new Point(217, 179);
-            tbusr.Margin = new Padding(6, 6, 6, 6);
+            tbusr.Margin = new Padding(6);
             tbusr.Name = "tbusr";
             tbusr.Size = new Size(238, 39);
             tbusr.TabIndex = 0;
@@ -49,16 +49,18 @@
             // tbpw
             // 
             tbpw.Location = new Point(217, 437);
-            tbpw.Margin = new Padding(6, 6, 6, 6);
+            tbpw.Margin = new Padding(6);
             tbpw.Name = "tbpw";
+            tbpw.PasswordChar = '*';
             tbpw.Size = new Size(238, 39);
             tbpw.TabIndex = 1;
+            tbpw.UseSystemPasswordChar = true;
             tbpw.TextChanged += tbpw_TextChanged;
             // 
             // btnlogin
             // 
             btnlogin.Location = new Point(260, 572);
-            btnlogin.Margin = new Padding(6, 6, 6, 6);
+            btnlogin.Margin = new Padding(6);
             btnlogin.Name = "btnlogin";
             btnlogin.Size = new Size(139, 49);
             btnlogin.TabIndex = 0;
@@ -91,7 +93,7 @@
             // btnregister
             // 
             btnregister.Location = new Point(260, 640);
-            btnregister.Margin = new Padding(6, 6, 6, 6);
+            btnregister.Margin = new Padding(6);
             btnregister.Name = "btnregister";
             btnregister.Size = new Size(139, 49);
             btnregister.TabIndex = 5;
@@ -112,7 +114,7 @@
             Controls.Add(tbpw);
             Controls.Add(tbusr);
             Controls.Add(btnregister);
-            Margin = new Padding(6, 6, 6, 6);
+            Margin = new Padding(6);
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;

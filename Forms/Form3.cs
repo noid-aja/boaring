@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using Npgsql;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using Npgsql;
+using WinFormsApp1.Helpers;
 
 namespace WinFormsApp1
 {
@@ -19,40 +15,73 @@ namespace WinFormsApp1
 
         private void chart1_Click(object sender, EventArgs e)
         {
-            chart1.Series.Clear();
-            Series s = new Series("Penjualan")
+            try
             {
-                ChartType = SeriesChartType.Column,
-                XValueType = ChartValueType.String,
-                YValueType = ChartValueType.Double
-            };
+                chart1.Series.Clear();
 
-            chart1.Series.Add(s);
-
-            using (NpgsqlConnection conn = ConnectDB.GetConn())
-            {
-                string query = @"Select p.nama_produk, sum(jumlah) as total from penjualan pj
-                                join produk p using(produk_id) group by 1";
-
-                using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
-                using (NpgsqlDataReader rd = cmd.ExecuteReader())
+                Series series = new Series("Penjualan")
                 {
-                    while (rd.Read())
-                    {
-                        string nama = rd.IsDBNull(0) ? "(unknown)" : rd.GetString(0);
-                        double total = 0;
-                        if (!rd.IsDBNull(1))
-                        {
-                            try { total = Convert.ToDouble(rd.GetValue(1)); }
-                            catch { total = 0; }
-                        }
+                    ChartType = SeriesChartType.Column,
+                    XValueType = ChartValueType.String,
+                    YValueType = ChartValueType.Double
+                };
 
-                        s.Points.AddXY(nama, total);
-                    }
+                chart1.Series.Add(series);
+
+                using NpgsqlConnection conn = ConnectDB.GetConnection();
+                conn.Open();
+
+                const string query = """
+                    SELECT
+                        p.nama_produk,
+                        SUM(pj.jumlah) AS total
+                    FROM penjualan pj
+                    JOIN produk p
+                        ON p.produk_id = pj.produk_id
+                    GROUP BY p.nama_produk
+                    ORDER BY p.nama_produk;
+                    """;
+
+                using NpgsqlCommand cmd = new NpgsqlCommand(query, conn);
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    string namaProduk = reader.IsDBNull(0)
+                        ? "(unknown)"
+                        : reader.GetString(0);
+
+                    double total = reader.IsDBNull(1)
+                        ? 0
+                        : Convert.ToDouble(reader.GetValue(1));
+
+                    series.Points.AddXY(namaProduk, total);
                 }
-            }
 
-            chart1.Invalidate();
+                chart1.Invalidate();
+            }
+            catch (NpgsqlException ex)
+            {
+                MessageBox.Show(
+                    "Gagal mengambil data grafik:\n" + ex.Message,
+                    "Database Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Terjadi kesalahan:\n" + ex.Message,
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
+        }
+
+        private void Form3_Load(object sender, EventArgs e)
+        {
         }
     }
 }

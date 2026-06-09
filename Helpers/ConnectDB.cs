@@ -1,36 +1,19 @@
-﻿using System;
-using Npgsql;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
+﻿using Npgsql;
 
-namespace WinFormsApp1
+namespace WinFormsApp1.Helpers
 {
-    public class ConnectDB
+    public static class ConnectDB
     {
-        private static string ConnString =
+        private const string ConnString =
             "Host=localhost;" +
             "Port=5432;" +
             "Username=postgres;" +
             "Password=postgres8888;" +
             "Database=Kapten;";
-        public static NpgsqlConnection GetConn()
+
+        public static NpgsqlConnection GetConnection()
         {
-            NpgsqlConnection conn = new NpgsqlConnection(ConnString);
-
-            try
-            {
-                conn.Open();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Koneksi gagal di : " + ex.Message);
-            }
-
-            return conn;
-
-
+            return new NpgsqlConnection(ConnString);
         }
-
     }
 }
