@@ -32,15 +32,22 @@ namespace WinFormsApp1
 
             using (NpgsqlConnection conn = ConnectDB.GetConn())
             {
+<<<<<<<< HEAD:Forms/login.cs
               string query = @"SELECT COUNT(*) 
               FROM kapten.users AS u
               WHERE u.nama = @nama
                 AND u.password = @pass
                 AND u.is_aktif = TRUE";
+========
+                string query = @"SELECT COUNT(*) FROM kapten.users 
+                                 WHERE username = @username 
+                                 AND password = @pass
+                                 AND is_aktif = TRUE";
+>>>>>>>> origin/master:Forms/Form1.cs
 
                 using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@nama", nama);
+                    cmd.Parameters.AddWithValue("@username", nama);
                     cmd.Parameters.AddWithValue("@pass", password);
 
                     int count = Convert.ToInt32(cmd.ExecuteScalar());

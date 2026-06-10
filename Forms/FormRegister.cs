@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace WinFormsApp1
 {
-    public partial class FormRegister : Form  // ← bukan Form1, biar ga bentrok
+    public partial class FormRegister : Form 
     {
         public FormRegister()
         {
@@ -60,7 +60,7 @@ namespace WinFormsApp1
 
             try
             {
-                using (var conn = ConnectDB.GetConn())  // ← ConnectDB dari WinFormsApp1
+                using (var conn = ConnectDB.GetConn())
                 {
                     string query = @"INSERT INTO users (nama, email, password_hash, role) 
                                      VALUES (@nama, @email, @password_hash, 'petani')";
