@@ -38,7 +38,7 @@
             // 
             // chart1
             // 
-            chart1.BackColor = Color.Transparent;
+            chart1.BackColor = Color.Gainsboro;
             chartArea1.Name = "ChartArea1";
             chart1.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
@@ -63,6 +63,7 @@
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(914, 600);
             Controls.Add(chart1);
+            DoubleBuffered = true;
             Margin = new Padding(3, 4, 3, 4);
             Name = "Form3";
             Text = "Form3";

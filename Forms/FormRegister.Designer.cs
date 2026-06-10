@@ -31,6 +31,7 @@
             txtname.Name = "txtname";
             txtname.Size = new Size(251, 24);
             txtname.TabIndex = 0;
+            txtname.TextChanged += this.txtname_TextChanged;
             // 
             // txtpassword
             // 
@@ -44,6 +45,7 @@
             txtpassword.Size = new Size(251, 24);
             txtpassword.TabIndex = 4;
             txtpassword.UseSystemPasswordChar = true;
+            txtpassword.TextChanged += txtpassword_TextChanged;
             // 
             // label3
             // 
@@ -97,6 +99,7 @@
             txtemail.Name = "txtemail";
             txtemail.Size = new Size(251, 24);
             txtemail.TabIndex = 10;
+            txtemail.TextChanged += this.txtemail_TextChanged;
             // 
             // FormRegister
             // 

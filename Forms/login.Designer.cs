@@ -44,12 +44,13 @@
             // 
             tbusr.BackColor = Color.White;
             tbusr.BorderStyle = BorderStyle.None;
+            tbusr.Dock = DockStyle.Fill;
             tbusr.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tbusr.Location = new Point(274, 147);
+            tbusr.Location = new Point(0, 0);
             tbusr.Margin = new Padding(4);
             tbusr.Name = "tbusr";
             tbusr.RightToLeft = RightToLeft.No;
-            tbusr.Size = new Size(254, 27);
+            tbusr.Size = new Size(782, 27);
             tbusr.TabIndex = 0;
             tbusr.TextChanged += tbusr_TextChanged;
             // 

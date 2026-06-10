@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace WinFormsApp1
 {
-    public partial class FormRegister : Form 
+    public partial class FormRegister : Form
     {
         public FormRegister()
         {
@@ -130,6 +130,11 @@ namespace WinFormsApp1
         }
 
         private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtpassword_TextChanged(object sender, EventArgs e)
         {
 
         }

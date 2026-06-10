@@ -109,7 +109,7 @@ namespace WinFormsApp1
                 NpgsqlDataAdapter da = new NpgsqlDataAdapter(query, conn);
 
                 DataTable dt = new DataTable();
-                da.Fill(dt);
+                int v = da.Fill(dt);
                 dataGridView1.DataSource = dt;
             }
         }
