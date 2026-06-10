@@ -1,69 +1,107 @@
 using Npgsql;
 using System;
-using System.Data;
 using System.Windows.Forms;
+using WinFormsApp1.Controllers;
+using WinFormsApp1.Helpers;
+using WinFormsApp1.Models;
 
 namespace WinFormsApp1
 {
     public partial class Form1 : Form
     {
+        private readonly AuthController _authController;
+
         public Form1()
         {
             InitializeComponent();
+            _authController = new AuthController();
         }
-
-        private void Form1_Load(object sender, EventArgs e) { }
-        private void tbusr_TextChanged(object sender, EventArgs e) { }
-        private void tbpw_TextChanged(object sender, EventArgs e) { }
-        private void label1_Click(object sender, EventArgs e) { }
-        private void label2_Click(object sender, EventArgs e) { }
 
         private void btnlogin_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(tbusr.Text) ||
-                string.IsNullOrWhiteSpace(tbpw.Text))
+            try
             {
-                MessageBox.Show("Semua data harus diisi!");
-                return;
+                User user = _authController.Login(
+                    tbusr.Text,
+                    tbpw.Text
+                );
+
+                UserContext.SetUser(user);
+
+                MessageBox.Show(
+                    $"Login berhasil!\nSelamat datang, {user.NamaLengkap}.",
+                    "Sukses",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
+
+                Formmenu menu = new Formmenu();
+                menu.Show();
+                Hide();
             }
-
-            string nama = tbusr.Text;       
-            string password = tbpw.Text;     
-
-            using (NpgsqlConnection conn = ConnectDB.GetConn())
+            catch (ArgumentException ex)
             {
-                string query = @"SELECT COUNT(*) FROM kapten.users 
-                                 WHERE username = @username 
-                                 AND password = @pass
-                                 AND is_aktif = TRUE";
-
-                using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@username", nama);
-                    cmd.Parameters.AddWithValue("@pass", password);
-
-                    int count = Convert.ToInt32(cmd.ExecuteScalar());
-
-                    if (count > 0)
-                    {
-                        MessageBox.Show("Login Berhasil!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        Formmenu fm = new Formmenu();
-                        fm.Show();
-                        this.Hide();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Email atau Password Salah", "Gagal", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
+                MessageBox.Show(
+                    ex.Message,
+                    "Validasi",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                MessageBox.Show(
+                    ex.Message,
+                    "Login Gagal",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
+            catch (NpgsqlException ex)
+            {
+                MessageBox.Show(
+                    "Gagal mengakses database:\n" + ex.Message,
+                    "Database Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Terjadi kesalahan:\n" + ex.Message,
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
 
         private void btnregister_Click(object sender, EventArgs e)
         {
-            FormRegister fr = new FormRegister();
-            fr.Show();
-            this.Hide();
+            FormRegister registerForm = new FormRegister();
+            registerForm.Show();
+            Hide();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+        }
+
+        private void tbusr_TextChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void tbpw_TextChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
         }
     }
 }

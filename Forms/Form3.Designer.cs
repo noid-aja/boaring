@@ -44,7 +44,7 @@
             legend1.Name = "Legend1";
             chart1.Legends.Add(legend1);
             chart1.Location = new Point(-35, 333);
-            chart1.Margin = new Padding(6, 6, 6, 6);
+            chart1.Margin = new Padding(6);
             chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
@@ -63,9 +63,10 @@
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1486, 960);
             Controls.Add(chart1);
-            Margin = new Padding(6, 6, 6, 6);
+            Margin = new Padding(6);
             Name = "Form3";
             Text = "Form3";
+            Load += Form3_Load;
             ((System.ComponentModel.ISupportInitialize)chart1).EndInit();
             ResumeLayout(false);
         }
