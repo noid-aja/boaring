@@ -2,7 +2,7 @@
 
 namespace WinFormsApp1.Helpers
 {
-    public static class ConnectDB
+    static class ConnectDB
     {
         private const string ConnString =
             "Host=localhost;" +
