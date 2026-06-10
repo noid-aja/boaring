@@ -12,8 +12,8 @@ namespace WinFormsApp1
             "Host=localhost;" +
             "Port=5432;" +
             "Username=postgres;" +
-            "Password=postgres8888;" +
-            "Database=PetaniTestis;";
+            "Password=postgres;" +
+            "Database=kaptencoi;";
         public static NpgsqlConnection GetConn()
         {
             NpgsqlConnection conn = new NpgsqlConnection(ConnString);

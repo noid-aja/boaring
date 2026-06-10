@@ -13,129 +13,106 @@
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormRegister));
             txtname = new TextBox();
-            label1 = new Label();
-            label2 = new Label();
             txtpassword = new TextBox();
             label3 = new Label();
             txtcpassword = new TextBox();
             Register = new Button();
-            label4 = new Label();
-            label10 = new Label();
             txtemail = new TextBox();
             SuspendLayout();
             // 
             // txtname
             // 
-            txtname.Location = new Point(415, 352);
+            txtname.BackColor = Color.White;
+            txtname.BorderStyle = BorderStyle.None;
+            txtname.Font = new Font("Segoe UI", 10.8F);
+            txtname.Location = new Point(275, 137);
+            txtname.Margin = new Padding(2);
             txtname.Name = "txtname";
-            txtname.Size = new Size(339, 39);
+            txtname.Size = new Size(251, 24);
             txtname.TabIndex = 0;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(415, 303);
-            label1.Name = "label1";
-            label1.Size = new Size(119, 32);
-            label1.TabIndex = 3;
-            label1.Text = "username";
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new Point(415, 555);
-            label2.Name = "label2";
-            label2.Size = new Size(113, 32);
-            label2.TabIndex = 5;
-            label2.Text = "password";
             // 
             // txtpassword
             // 
-            txtpassword.Location = new Point(415, 603);
+            txtpassword.BackColor = Color.White;
+            txtpassword.BorderStyle = BorderStyle.None;
+            txtpassword.Font = new Font("Segoe UI", 10.8F);
+            txtpassword.Location = new Point(274, 234);
+            txtpassword.Margin = new Padding(2);
             txtpassword.Name = "txtpassword";
             txtpassword.PasswordChar = '*';
-            txtpassword.Size = new Size(339, 39);
+            txtpassword.Size = new Size(251, 24);
             txtpassword.TabIndex = 4;
             txtpassword.UseSystemPasswordChar = true;
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(415, 672);
+            label3.BackColor = Color.White;
+            label3.Location = new Point(449, 288);
+            label3.Margin = new Padding(2, 0, 2, 0);
             label3.Name = "label3";
-            label3.Size = new Size(202, 32);
+            label3.Size = new Size(0, 20);
             label3.TabIndex = 7;
-            label3.Text = "confirm password";
+            label3.Click += label3_Click;
             // 
             // txtcpassword
             // 
-            txtcpassword.Location = new Point(415, 723);
+            txtcpassword.BackColor = Color.White;
+            txtcpassword.BorderStyle = BorderStyle.None;
+            txtcpassword.Font = new Font("Segoe UI", 10.8F);
+            txtcpassword.Location = new Point(273, 284);
+            txtcpassword.Margin = new Padding(2);
             txtcpassword.Name = "txtcpassword";
             txtcpassword.PasswordChar = '*';
-            txtcpassword.Size = new Size(339, 39);
+            txtcpassword.Size = new Size(253, 24);
             txtcpassword.TabIndex = 6;
             txtcpassword.UseSystemPasswordChar = true;
+            txtcpassword.TextChanged += txtcpassword_TextChanged;
             // 
             // Register
             // 
-            Register.BackColor = Color.Lime;
-            Register.Location = new Point(498, 1020);
+            Register.BackColor = Color.Transparent;
+            Register.FlatAppearance.BorderSize = 0;
+            Register.FlatAppearance.MouseDownBackColor = Color.Transparent;
+            Register.FlatAppearance.MouseOverBackColor = Color.Transparent;
+            Register.FlatStyle = FlatStyle.Flat;
+            Register.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            Register.ForeColor = Color.White;
+            Register.Location = new Point(273, 334);
+            Register.Margin = new Padding(2);
             Register.Name = "Register";
-            Register.Size = new Size(150, 46);
+            Register.Size = new Size(254, 35);
             Register.TabIndex = 8;
-            Register.Text = "register";
             Register.UseVisualStyleBackColor = false;
             Register.Click += Register_Click;
             // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.BackColor = Color.Transparent;
-            label4.Font = new Font("Segoe UI Black", 18F, FontStyle.Bold | FontStyle.Italic);
-            label4.ForeColor = Color.DarkViolet;
-            label4.Location = new Point(299, 70);
-            label4.Name = "label4";
-            label4.Size = new Size(522, 65);
-            label4.TabIndex = 9;
-            label4.Text = "Register Petani Form";
-            label4.Click += label4_Click;
-            // 
-            // label10
-            // 
-            label10.AutoSize = true;
-            label10.Location = new Point(415, 434);
-            label10.Name = "label10";
-            label10.Size = new Size(72, 32);
-            label10.TabIndex = 11;
-            label10.Text = "email";
-            // 
             // txtemail
             // 
-            txtemail.Location = new Point(415, 483);
+            txtemail.BackColor = Color.White;
+            txtemail.BorderStyle = BorderStyle.None;
+            txtemail.Font = new Font("Segoe UI", 10.8F);
+            txtemail.Location = new Point(274, 187);
+            txtemail.Margin = new Padding(2);
             txtemail.Name = "txtemail";
-            txtemail.Size = new Size(339, 39);
+            txtemail.Size = new Size(251, 24);
             txtemail.TabIndex = 10;
             // 
             // FormRegister
             // 
-            AutoScaleDimensions = new SizeF(13F, 32F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
-            BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(1176, 1146);
-            Controls.Add(label10);
+            BackgroundImage = Properties.Resources.registrasi;
+            BackgroundImageLayout = ImageLayout.Center;
+            ClientSize = new Size(782, 448);
             Controls.Add(txtemail);
-            Controls.Add(label4);
             Controls.Add(Register);
             Controls.Add(label3);
             Controls.Add(txtcpassword);
-            Controls.Add(label2);
             Controls.Add(txtpassword);
-            Controls.Add(label1);
             Controls.Add(txtname);
             DoubleBuffered = true;
+            Margin = new Padding(2);
             Name = "FormRegister";
             Text = "Register";
             ResumeLayout(false);
@@ -143,14 +120,10 @@
         }
 
         private System.Windows.Forms.TextBox txtname;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtpassword;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtcpassword;
         private System.Windows.Forms.Button Register;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox txtemail;
     }
 }
