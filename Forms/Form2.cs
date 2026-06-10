@@ -108,7 +108,7 @@ namespace WinFormsApp1
 
                 NpgsqlDataAdapter da = new NpgsqlDataAdapter(query, conn);
 
-                DataTable dt = new DataTable();                                       
+                DataTable dt = new DataTable();
                 da.Fill(dt);
                 dataGridView1.DataSource = dt;
             }
@@ -162,15 +162,20 @@ namespace WinFormsApp1
                     LoadProducts();
                 }
             }
-             else
-                {
-                    MessageBox.Show(
-                        "pilih data dulu",
-                        "Peringatan",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-                }
+            else
+            {
+                MessageBox.Show(
+                    "pilih data dulu",
+                    "Peringatan",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
 
+
+        }
+
+        private void Form2_Load(object sender, EventArgs e)
+        {
 
         }
     }

@@ -5,9 +5,9 @@ using System.Windows.Forms;
 
 namespace WinFormsApp1
 {
-    public partial class Form1 : Form
+    public partial class login : Form
     {
-        public Form1()
+        public login()
         {
             InitializeComponent();
         }
@@ -27,8 +27,8 @@ namespace WinFormsApp1
                 return;
             }
 
-            string nama = tbusr.Text;       
-            string password = tbpw.Text;     
+            string nama = tbusr.Text;
+            string password = tbpw.Text;
 
             using (NpgsqlConnection conn = ConnectDB.GetConn())
             {
@@ -59,11 +59,36 @@ namespace WinFormsApp1
             }
         }
 
-        private void btnregister_Click(object sender, EventArgs e)
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             FormRegister fr = new FormRegister();
             fr.Show();
             this.Hide();
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

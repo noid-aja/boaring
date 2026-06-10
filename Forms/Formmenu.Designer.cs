@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Formmenu));
             pnlmenu = new Panel();
             pnl1 = new Panel();
             btn4 = new Button();
@@ -44,14 +43,15 @@
             // 
             // pnlmenu
             // 
-            pnlmenu.BackColor = SystemColors.ActiveCaption;
+            pnlmenu.BackColor = SystemColors.ButtonFace;
             pnlmenu.Controls.Add(pnl1);
             pnlmenu.Controls.Add(btnmenu);
             pnlmenu.Controls.Add(panel2);
             pnlmenu.Dock = DockStyle.Left;
             pnlmenu.Location = new Point(0, 0);
+            pnlmenu.Margin = new Padding(3, 4, 3, 4);
             pnlmenu.Name = "pnlmenu";
-            pnlmenu.Size = new Size(200, 506);
+            pnlmenu.Size = new Size(270, 977);
             pnlmenu.TabIndex = 0;
             pnlmenu.Paint += pnlmenu_Paint;
             // 
@@ -62,21 +62,24 @@
             pnl1.Controls.Add(btn2);
             pnl1.Controls.Add(btn1);
             pnl1.Dock = DockStyle.Top;
-            pnl1.Location = new Point(0, 129);
+            pnl1.Location = new Point(0, 221);
+            pnl1.Margin = new Padding(3, 4, 3, 4);
             pnl1.Name = "pnl1";
-            pnl1.Size = new Size(200, 166);
+            pnl1.Size = new Size(270, 221);
             pnl1.TabIndex = 2;
             // 
             // btn4
             // 
             btn4.Dock = DockStyle.Top;
+            btn4.FlatAppearance.BorderSize = 0;
             btn4.FlatStyle = FlatStyle.Flat;
             btn4.Font = new Font("Yu Gothic", 14.25F, FontStyle.Bold | FontStyle.Italic);
             btn4.ImageAlign = ContentAlignment.MiddleLeft;
-            btn4.Location = new Point(0, 123);
+            btn4.Location = new Point(0, 165);
+            btn4.Margin = new Padding(3, 4, 3, 4);
             btn4.Name = "btn4";
-            btn4.Padding = new Padding(25, 0, 0, 0);
-            btn4.Size = new Size(200, 41);
+            btn4.Padding = new Padding(29, 0, 0, 0);
+            btn4.Size = new Size(270, 55);
             btn4.TabIndex = 3;
             btn4.Text = "Comming Soon";
             btn4.TextAlign = ContentAlignment.MiddleLeft;
@@ -86,13 +89,15 @@
             // btn3
             // 
             btn3.Dock = DockStyle.Top;
+            btn3.FlatAppearance.BorderSize = 0;
             btn3.FlatStyle = FlatStyle.Flat;
             btn3.Font = new Font("Yu Gothic", 14.25F, FontStyle.Bold | FontStyle.Italic);
             btn3.ImageAlign = ContentAlignment.MiddleLeft;
-            btn3.Location = new Point(0, 82);
+            btn3.Location = new Point(0, 110);
+            btn3.Margin = new Padding(3, 4, 3, 4);
             btn3.Name = "btn3";
-            btn3.Padding = new Padding(25, 0, 0, 0);
-            btn3.Size = new Size(200, 41);
+            btn3.Padding = new Padding(29, 0, 0, 0);
+            btn3.Size = new Size(270, 55);
             btn3.TabIndex = 2;
             btn3.Text = "Comming Soon";
             btn3.TextAlign = ContentAlignment.MiddleLeft;
@@ -102,13 +107,15 @@
             // btn2
             // 
             btn2.Dock = DockStyle.Top;
+            btn2.FlatAppearance.BorderSize = 0;
             btn2.FlatStyle = FlatStyle.Flat;
             btn2.Font = new Font("Yu Gothic", 14.25F, FontStyle.Bold | FontStyle.Italic);
             btn2.ImageAlign = ContentAlignment.MiddleLeft;
-            btn2.Location = new Point(0, 41);
+            btn2.Location = new Point(0, 55);
+            btn2.Margin = new Padding(3, 4, 3, 4);
             btn2.Name = "btn2";
-            btn2.Padding = new Padding(25, 0, 0, 0);
-            btn2.Size = new Size(200, 41);
+            btn2.Padding = new Padding(29, 0, 0, 0);
+            btn2.Size = new Size(270, 55);
             btn2.TabIndex = 1;
             btn2.Text = "Pamer datagrid";
             btn2.TextAlign = ContentAlignment.MiddleLeft;
@@ -118,13 +125,15 @@
             // btn1
             // 
             btn1.Dock = DockStyle.Top;
+            btn1.FlatAppearance.BorderSize = 0;
             btn1.FlatStyle = FlatStyle.Flat;
             btn1.Font = new Font("Yu Gothic", 14.25F, FontStyle.Bold | FontStyle.Italic);
             btn1.ImageAlign = ContentAlignment.MiddleLeft;
             btn1.Location = new Point(0, 0);
+            btn1.Margin = new Padding(3, 4, 3, 4);
             btn1.Name = "btn1";
-            btn1.Padding = new Padding(25, 0, 0, 0);
-            btn1.Size = new Size(200, 41);
+            btn1.Padding = new Padding(29, 0, 0, 0);
+            btn1.Size = new Size(270, 55);
             btn1.TabIndex = 0;
             btn1.Text = "ini ada chart";
             btn1.TextAlign = ContentAlignment.MiddleLeft;
@@ -134,12 +143,13 @@
             // btnmenu
             // 
             btnmenu.Dock = DockStyle.Top;
+            btnmenu.FlatAppearance.BorderSize = 0;
             btnmenu.FlatStyle = FlatStyle.Flat;
             btnmenu.Font = new Font("Segoe UI Black", 11.25F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
-            btnmenu.Location = new Point(0, 78);
+            btnmenu.Location = new Point(0, 141);
             btnmenu.Margin = new Padding(0);
             btnmenu.Name = "btnmenu";
-            btnmenu.Size = new Size(200, 51);
+            btnmenu.Size = new Size(270, 80);
             btnmenu.TabIndex = 1;
             btnmenu.Text = "coming soon";
             btnmenu.TextAlign = ContentAlignment.MiddleLeft;
@@ -148,34 +158,37 @@
             // 
             // panel2
             // 
-            panel2.BackColor = SystemColors.ActiveCaption;
+            panel2.BackColor = Color.White;
             panel2.Dock = DockStyle.Top;
             panel2.Location = new Point(0, 0);
+            panel2.Margin = new Padding(3, 4, 3, 4);
             panel2.Name = "panel2";
-            panel2.Size = new Size(200, 78);
+            panel2.Size = new Size(270, 141);
             panel2.TabIndex = 1;
             // 
             // panelmain
             // 
-            panelmain.BackgroundImage = (Image)resources.GetObject("panelmain.BackgroundImage");
             panelmain.BackgroundImageLayout = ImageLayout.Stretch;
             panelmain.Dock = DockStyle.Fill;
-            panelmain.Location = new Point(200, 0);
+            panelmain.Location = new Point(270, 0);
+            panelmain.Margin = new Padding(3, 4, 3, 4);
             panelmain.Name = "panelmain";
-            panelmain.Size = new Size(842, 506);
+            panelmain.Size = new Size(1152, 977);
             panelmain.TabIndex = 1;
             panelmain.Paint += panelmain_Paint;
             // 
             // Formmenu
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(1042, 506);
+            ClientSize = new Size(1422, 977);
             Controls.Add(panelmain);
             Controls.Add(pnlmenu);
+            Margin = new Padding(3, 4, 3, 4);
             Name = "Formmenu";
             Text = "Formmenu";
+            WindowState = FormWindowState.Maximized;
             Load += Formmenu_Load;
             pnlmenu.ResumeLayout(false);
             pnl1.ResumeLayout(false);
