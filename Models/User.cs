@@ -2,18 +2,60 @@
 {
     public class User
     {
-        public int IdUser { get; set; }
+        protected int IdUser;
 
-        public string NamaLengkap { get; set; } = string.Empty;
+        protected string NamaLengkap;
 
-        public string Username { get; set; } = string.Empty;
+        protected string Username;
 
-        public string Password { get; set; } = string.Empty;
+        protected string Password;
 
-        public string? NoTelp { get; set; }
+        protected string? NoTelp;
 
-        public bool IsAktif { get; set; } = true;
-        public List<string> Roles { get; set; } = new();
+        protected bool IsAktif;
+
+        protected List<string> Roles;
+
+        public User(int IDUser, string NamaLengkap, string usr, string pw, string? notelp, bool Isaktif, List<string> roles)
+        {
+            this.IdUser= IdUser;
+            this.NamaLengkap = NamaLengkap;
+            this.Username = usr;
+            this.Password = pw;
+            this.NoTelp = notelp;
+            this.IsAktif = Isaktif;
+            this.Roles = roles;
+        }
+
+        public int getid()
+        {
+            return this.IdUser;
+        }
+
+        public string getNamaLengkap()
+        {
+            return this.NamaLengkap;
+        }
+        
+        public string getusr()
+        {
+            return this.Username;
+        }
+
+        public string? getNoTelp()
+        {
+            return this.NoTelp;
+        }
+
+        public bool getIsAktif()
+        {
+            return this.IsAktif;
+        }
+
+        public List<string> getroles()
+        {
+            return this.Roles;
+        }
     }
 
 }

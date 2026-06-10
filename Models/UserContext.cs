@@ -17,7 +17,7 @@ namespace WinFormsApp1.Helpers
 
         public static void SetUser(User user)
         {
-            IdUser = user.IdUser;
+            IdUser = user.Id();
             NamaLengkap = user.NamaLengkap;
             Username = user.Username;
             Roles = user.Roles;
