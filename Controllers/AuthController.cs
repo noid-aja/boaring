@@ -19,7 +19,8 @@ namespace WinFormsApp1.Controllers
             string konfirmasiPassword,
             string noTelp,
             string role)
-        {
+        {   
+
             if (string.IsNullOrWhiteSpace(namaLengkap))
             {
                 throw new ArgumentException(

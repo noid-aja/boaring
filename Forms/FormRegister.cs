@@ -1,19 +1,20 @@
 ﻿using Npgsql;
 using System;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using System.Xml.Linq;
-using WinFormsApp1.Helpers;
+using WinFormsApp1.Controllers;
 
 namespace WinFormsApp1
 {
     public partial class FormRegister : Form
     {
+        private readonly AuthController _authController;
+
         public FormRegister()
         {
             InitializeComponent();
 
-            // Item Petani dan Pembeli sudah diisi lewat Designer.
+            _authController = new AuthController();
+
             txtrole.DropDownStyle = ComboBoxStyle.DropDownList;
 
             if (txtrole.Items.Count > 0)
@@ -27,7 +28,6 @@ namespace WinFormsApp1
             string namaLengkap = txtnamapanjang.Text.Trim();
             string username = txtusername.Text.Trim();
             string noTelp = txtnotelp.Text.Trim();
-            string email = txtemail.Text.Trim();
             string password = txtpassword.Text;
             string confirmPassword = txtcpassword.Text;
 
@@ -140,104 +140,13 @@ namespace WinFormsApp1
 
             try
             {
-                using NpgsqlConnection conn = ConnectDB.GetConnection();
-                conn.Open();
-
-                using NpgsqlTransaction transaction = conn.BeginTransaction();
-
-                try
-                {
-                    const string insertUserQuery = """
-                        INSERT INTO kapten.users
-                        (
-                            nama_lengkap,
-                            username,
-                            password,
-                            no_telp,
-                            is_aktif
-                        )
-                        VALUES
-                        (
-                            @nama_lengkap,
-                            @username,
-                            @password,
-                            @no_telp,
-                            TRUE
-                        )
-                        RETURNING id_user;
-                        """;
-
-                    int idUser;
-
-                    using (NpgsqlCommand cmd = new NpgsqlCommand(
-                        insertUserQuery,
-                        conn,
-                        transaction))
-                    {
-                        cmd.Parameters.AddWithValue(
-                            "nama_lengkap",
-                            namaLengkap);
-
-                        cmd.Parameters.AddWithValue(
-                            "username",
-                            username);
-
-                        cmd.Parameters.AddWithValue(
-                            "password",
-                            password);
-
-                        cmd.Parameters.AddWithValue(
-                            "no_telp",
-                            noTelp);
-
-                        object? result = cmd.ExecuteScalar();
-
-                        if (result is null || result == DBNull.Value)
-                        {
-                            throw new InvalidOperationException(
-                                "ID user gagal dibuat.");
-                        }
-
-                        idUser = Convert.ToInt32(result);
-                    }
-
-                    const string insertRoleQuery = """
-                        INSERT INTO kapten.user_roles
-                        (
-                            id_user,
-                            id_role
-                        )
-                        SELECT
-                            @id_user,
-                            id_role
-                        FROM kapten.roles
-                        WHERE LOWER(nama_role) = @nama_role;
-                        """;
-
-                    using (NpgsqlCommand cmd = new NpgsqlCommand(
-                        insertRoleQuery,
-                        conn,
-                        transaction))
-                    {
-                        cmd.Parameters.AddWithValue("id_user", idUser);
-                        cmd.Parameters.AddWithValue("nama_role", role);
-
-                        int affectedRows = cmd.ExecuteNonQuery();
-
-                        if (affectedRows != 1)
-                        {
-                            throw new InvalidOperationException(
-                                "Role tidak ditemukan atau gagal diberikan.");
-                        }
-                    }
-
-                    transaction.Commit();
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
-                }
+                _authController.Register(
+                    namaLengkap,
+                    username,
+                    password,
+                    confirmPassword,
+                    noTelp,
+                    role);
 
                 MessageBox.Show(
                     $"Registrasi berhasil!\nSelamat datang, {namaLengkap}.",
@@ -247,6 +156,7 @@ namespace WinFormsApp1
 
                 Form1 loginForm = new Form1();
                 loginForm.Show();
+
                 Hide();
             }
             catch (PostgresException ex)
@@ -259,6 +169,14 @@ namespace WinFormsApp1
                     MessageBoxIcon.Warning);
 
                 txtusername.Focus();
+            }
+            catch (ArgumentException ex)
+            {
+                MessageBox.Show(
+                    ex.Message,
+                    "Data Tidak Valid",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
             }
             catch (NpgsqlException ex)
             {
@@ -277,7 +195,6 @@ namespace WinFormsApp1
                     MessageBoxIcon.Error);
             }
         }
-
         private void FormRegister_Load(object sender, EventArgs e)
         {
         }

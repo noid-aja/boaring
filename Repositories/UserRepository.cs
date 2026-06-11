@@ -92,7 +92,7 @@ namespace WinFormsApp1.Repositories
                         @id_user,
                         id_role
                     FROM kapten.roles
-                    WHERE nama_role = @nama_role;
+                    WHERE LOWER(nama_role) = LOWER(@nama_role);
                     """;
 
                 using (NpgsqlCommand cmd = new NpgsqlCommand(

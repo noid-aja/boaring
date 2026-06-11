@@ -22,8 +22,6 @@
             txtcpassword = new TextBox();
             Register = new Button();
             label4 = new Label();
-            label10 = new Label();
-            txtemail = new TextBox();
             txtnotelp = new TextBox();
             label5 = new Label();
             txtrole = new ComboBox();
@@ -52,7 +50,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(415, 737);
+            label2.Location = new Point(415, 631);
             label2.Name = "label2";
             label2.Size = new Size(113, 32);
             label2.TabIndex = 5;
@@ -60,7 +58,7 @@
             // 
             // txtpassword
             // 
-            txtpassword.Location = new Point(415, 785);
+            txtpassword.Location = new Point(415, 679);
             txtpassword.Name = "txtpassword";
             txtpassword.PasswordChar = '*';
             txtpassword.Size = new Size(339, 39);
@@ -70,7 +68,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(415, 854);
+            label3.Location = new Point(415, 748);
             label3.Name = "label3";
             label3.Size = new Size(202, 32);
             label3.TabIndex = 7;
@@ -78,7 +76,7 @@
             // 
             // txtcpassword
             // 
-            txtcpassword.Location = new Point(415, 905);
+            txtcpassword.Location = new Point(415, 799);
             txtcpassword.Name = "txtcpassword";
             txtcpassword.PasswordChar = '*';
             txtcpassword.Size = new Size(339, 39);
@@ -108,22 +106,6 @@
             label4.TabIndex = 9;
             label4.Text = "Register Petani Form";
             label4.Click += label4_Click;
-            // 
-            // label10
-            // 
-            label10.AutoSize = true;
-            label10.Location = new Point(415, 616);
-            label10.Name = "label10";
-            label10.Size = new Size(72, 32);
-            label10.TabIndex = 11;
-            label10.Text = "email";
-            // 
-            // txtemail
-            // 
-            txtemail.Location = new Point(415, 665);
-            txtemail.Name = "txtemail";
-            txtemail.Size = new Size(339, 39);
-            txtemail.TabIndex = 10;
             // 
             // txtnotelp
             // 
@@ -191,8 +173,6 @@
             Controls.Add(label6);
             Controls.Add(label5);
             Controls.Add(txtnotelp);
-            Controls.Add(label10);
-            Controls.Add(txtemail);
             Controls.Add(label4);
             Controls.Add(Register);
             Controls.Add(label3);
@@ -216,8 +196,6 @@
         private System.Windows.Forms.TextBox txtcpassword;
         private System.Windows.Forms.Button Register;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox txtemail;
         private TextBox txtnotelp;
         private Label label5;
         private ComboBox txtrole;
