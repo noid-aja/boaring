@@ -2,69 +2,33 @@
 {
     public class User
     {
-        protected int IdUser;
+        public int IdUser { get; set; }
+        public string NamaLengkap { get; set; } 
+        public string Username { get; set; } 
+        public string Password { get; set; }
+        public string? NoTelp { get; set; }
+        public bool IsAktif { get; set; }
 
-        protected string NamaLengkap;
+        public List<Userrole> Roles { get; set; } = new List<Userrole>();
 
-        protected string Username;
+        public User() { }
 
-        protected string Password;
-
-        protected string? NoTelp;
-
-        protected string Email;
-
-        protected bool IsAktif;
-
-        protected List<string> Roles;
-
-        public User(int IDUser, string NamaLengkap, string usr, string pw, string? notelp, string email, bool Isaktif, List<string> roles)
+        public User(int idUser, string namaLengkap, string username, string pw, string? noTelp, bool isAktif)
         {
-            this.IdUser= IdUser;
-            this.NamaLengkap = NamaLengkap;
-            this.Username = usr;
-            this.Password = pw;
-            this.NoTelp = notelp;
-            this.Email = email;
-            this.IsAktif = Isaktif;
-            this.Roles = roles;
+            IdUser = idUser;
+            NamaLengkap = namaLengkap;
+            Username = username;
+            Password = pw;
+            NoTelp = noTelp;
+            IsAktif = isAktif;
+            Roles = new List<Userrole>();
         }
 
-        public int getid()
-        {
-            return this.IdUser;
-        }
+        public bool IsInRole(string role)
+            => Roles.Any(r => r.NamaRole.Equals(role, StringComparison.OrdinalIgnoreCase));
 
-        public string getNamaLengkap()
-        {
-            return this.NamaLengkap;
-        }
-        
-        public string getusr()
-        {
-            return this.Username;
-        }
-
-        public string? getNoTelp()
-        {
-            return this.NoTelp;
-        }
-
-        public string getEmail()
-        {
-            return this.Email;
-        }
-
-
-        public bool getIsAktif()
-        {
-            return this.IsAktif;
-        }
-
-        public List<string> getroles()
-        {
-            return this.Roles;
-        }
+        public override string ToString()
+            => $"[{IdUser}] {NamaLengkap} ({Username})";
     }
 
 }

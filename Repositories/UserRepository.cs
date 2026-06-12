@@ -1,12 +1,151 @@
 ﻿using Npgsql;
 using NpgsqlTypes;
 using WinFormsApp1.Models;
+using System.Collections.Generic;
 using WinFormsApp1.Helpers;
 
 namespace WinFormsApp1.Repositories
 {
     public class UserRepository
     {
+        // Expose helper methods used by controllers. These implementations delegate
+        // to SQL commands similar to ones in Models.UserRepository.
+        public bool IsNoTelpTaken(string noTelp)
+        {
+            using var conn = ConnectDB.GetConnection();
+            conn.Open();
+            using var cmd = new NpgsqlCommand(@"SELECT COUNT(1) FROM kapten.users WHERE no_telp = @no_telp", conn);
+            cmd.Parameters.AddWithValue("no_telp", NpgsqlDbType.Varchar, noTelp);
+            var result = cmd.ExecuteScalar();
+            return Convert.ToInt32(result) > 0;
+        }
+
+        public bool UpdateProfile(User user)
+        {
+            using var conn = ConnectDB.GetConnection();
+            conn.Open();
+            using var cmd = new NpgsqlCommand(@"
+                UPDATE kapten.users
+                SET nama_lengkap = @nama_lengkap,
+                    no_telp = @no_telp
+                WHERE id_user = @id_user", conn);
+            cmd.Parameters.AddWithValue("nama_lengkap", NpgsqlDbType.Varchar, user.NamaLengkap);
+            cmd.Parameters.AddWithValue("no_telp", NpgsqlDbType.Varchar, (object?)user.NoTelp ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("id_user", NpgsqlDbType.Integer, user.IdUser);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool UpdatePassword(int idUser, string newPassword)
+        {
+            using var conn = ConnectDB.GetConnection();
+            conn.Open();
+            using var cmd = new NpgsqlCommand(@"
+                UPDATE kapten.users
+                SET password = @password
+                WHERE id_user = @id_user", conn);
+            cmd.Parameters.AddWithValue("password", NpgsqlDbType.Varchar, newPassword);
+            cmd.Parameters.AddWithValue("id_user", NpgsqlDbType.Integer, idUser);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool AddRole(int idUser, string role)
+        {
+            using var conn = ConnectDB.GetConnection();
+            conn.Open();
+            using var cmd = new NpgsqlCommand(@"
+                INSERT INTO kapten.user_roles (id_user, id_role)
+                SELECT @id_user, id_role FROM kapten.roles WHERE nama_role = @nama_role", conn);
+            cmd.Parameters.AddWithValue("id_user", NpgsqlDbType.Integer, idUser);
+            cmd.Parameters.AddWithValue("nama_role", NpgsqlDbType.Varchar, role);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool RemoveRole(int idUser, string role)
+        {
+            using var conn = ConnectDB.GetConnection();
+            conn.Open();
+            using var cmd = new NpgsqlCommand(@"
+                DELETE FROM kapten.user_roles
+                WHERE id_user = @id_user AND id_role = (
+                    SELECT id_role FROM kapten.roles WHERE nama_role = @nama_role)", conn);
+            cmd.Parameters.AddWithValue("id_user", NpgsqlDbType.Integer, idUser);
+            cmd.Parameters.AddWithValue("nama_role", NpgsqlDbType.Varchar, role);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool SoftDeleteUser(int idUser)
+        {
+            using var conn = ConnectDB.GetConnection();
+            conn.Open();
+            using var cmd = new NpgsqlCommand(@"
+                UPDATE kapten.users SET is_aktif = false WHERE id_user = @id", conn);
+            cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, idUser);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+        public bool IsNoTelpTaken(string noTelp)
+        {
+            using var conn = ConnectDB.GetConnection();
+            conn.Open();
+            using var cmd = new NpgsqlCommand(@"
+                SELECT COUNT(1) FROM kapten.users WHERE no_telp = @no_telp", conn);
+            cmd.Parameters.AddWithValue("no_telp", NpgsqlDbType.Varchar, noTelp);
+            var result = cmd.ExecuteScalar();
+            return Convert.ToInt32(result) > 0;
+        }
+
+        public bool UpdateProfile(User user)
+        {
+            using var conn = ConnectDB.GetConnection();
+            conn.Open();
+            using var cmd = new NpgsqlCommand(@"
+                UPDATE kapten.users
+                SET nama_lengkap = @nama_lengkap,
+                    no_telp = @no_telp
+                WHERE id_user = @id_user", conn);
+            cmd.Parameters.AddWithValue("nama_lengkap", NpgsqlDbType.Varchar, user.NamaLengkap);
+            cmd.Parameters.AddWithValue("no_telp", NpgsqlDbType.Varchar, (object?)user.NoTelp ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("id_user", NpgsqlDbType.Integer, user.IdUser);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool UpdatePassword(int idUser, string newPassword)
+        {
+            using var conn = ConnectDB.GetConnection();
+            conn.Open();
+            using var cmd = new NpgsqlCommand(@"
+                UPDATE kapten.users
+                SET password = @password
+                WHERE id_user = @id_user", conn);
+            cmd.Parameters.AddWithValue("password", NpgsqlDbType.Varchar, newPassword);
+            cmd.Parameters.AddWithValue("id_user", NpgsqlDbType.Integer, idUser);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool AddRole(int idUser, string role)
+        {
+            using var conn = ConnectDB.GetConnection();
+            conn.Open();
+            using var cmd = new NpgsqlCommand(@"
+                INSERT INTO kapten.user_roles (id_user, id_role)
+                SELECT @id_user, id_role FROM kapten.roles WHERE nama_role = @nama_role", conn);
+            cmd.Parameters.AddWithValue("id_user", NpgsqlDbType.Integer, idUser);
+            cmd.Parameters.AddWithValue("nama_role", NpgsqlDbType.Varchar, role);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public bool RemoveRole(int idUser, string role)
+        {
+            using var conn = ConnectDB.GetConnection();
+            conn.Open();
+            using var cmd = new NpgsqlCommand(@"
+                DELETE FROM kapten.user_roles
+                WHERE id_user = @id_user AND id_role = (
+                    SELECT id_role FROM kapten.roles WHERE nama_role = @nama_role)", conn);
+            cmd.Parameters.AddWithValue("id_user", NpgsqlDbType.Integer, idUser);
+            cmd.Parameters.AddWithValue("nama_role", NpgsqlDbType.Varchar, role);
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
         public void Register(User user, string namaRole)
         {
             if (namaRole != "petani" && namaRole != "pembeli")
@@ -178,7 +317,8 @@ namespace WinFormsApp1.Repositories
                         NoTelp = reader.IsDBNull(3)
                             ? null
                             : reader.GetString(3),
-                        IsAktif = reader.GetBoolean(4)
+                        IsAktif = reader.GetBoolean(4),
+                        Roles = new List<string>()
                     };
                 }
 
