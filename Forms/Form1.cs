@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using WinFormsApp1.Controllers;
 using WinFormsApp1.Helpers;
 using WinFormsApp1.Models;
+using WinFormsApp1.Forms.AdminForm;
 
 namespace WinFormsApp1
 {
@@ -35,8 +36,8 @@ namespace WinFormsApp1
                     MessageBoxIcon.Information
                 );
 
-                Formmenu menu = new Formmenu();
-                menu.Show();
+                FormDashboard dashboard = new FormDashboard("admin");
+                dashboard.Show();
                 Hide();
             }
             catch (ArgumentException ex)
