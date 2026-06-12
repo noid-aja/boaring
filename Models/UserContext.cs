@@ -7,34 +7,34 @@ namespace WinFormsApp1.Helpers
 {
     public static class UserContext
     {
-        public static int IdUser { get; private set; }
+        public static User? CurrentUser { get; private set; }
 
-        public static string NamaLengkap { get; private set; } = string.Empty;
+        public static void Login(User user) => CurrentUser = user;
+        public static void Logout() => CurrentUser = null;
+        public static void SetUser(User user) => CurrentUser = user;
+        public static void Clear() => CurrentUser = null;
 
-        public static string Username { get; private set; } = string.Empty;
+        public static bool IsLoggedIn => CurrentUser != null;
+        public static int IdUser => CurrentUser?.IdUser ?? 0;
 
-        public static List<string> Roles { get; private set; } = new();
+        public static bool IsAdmin => CurrentUser?.IsInRole("admin") == true;
+        public static bool IsPetani => CurrentUser?.IsInRole("petani") == true;
+        public static bool IsPembeli => CurrentUser?.IsInRole("pembeli") == true;
+        public static bool IsInspektor => CurrentUser?.IsInRole("inspektor") == true;
 
-        public static void SetUser(User user)
+        public static bool HasAnyRole(params string[] roles)
+            => roles.Any(r => CurrentUser?.IsInRole(r) == true);
+
+        public static void RequireRole(string role)
         {
-            IdUser = user.IdUser;
-            NamaLengkap = user.NamaLengkap;
-            Username = user.Username;
-            Roles = user.Roles;
+            if (CurrentUser == null)
+                throw new UnauthorizedAccessException("Belum login.");
+
+            if (!CurrentUser.IsInRole(role))
+                throw new UnauthorizedAccessException($"Akses ditolak. Role '{role}' dibutuhkan.");
         }
 
-        public static bool HasRole(string role)
-        {
-            return Roles.Any(r =>
-                r.Equals(role, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public static void Clear()
-        {
-            IdUser = 0;
-            NamaLengkap = string.Empty;
-            Username = string.Empty;
-            Roles = new List<string>();
-        }
+        public static List<string> GetRoleNames()
+            => CurrentUser?.Roles.Select(r => r.NamaRole).ToList() ?? new List<string>();
     }
 }
