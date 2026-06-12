@@ -21,7 +21,6 @@ namespace WinFormsApp1.Models
                     values (@idPetani, @idJenis, @nama, @berat, @harga, @deskripsi, 'PendingInspeksi')", conn);
 
                 cmd.Parameters.AddWithValue("idPetani", idPetani);
-                cmd.Parameters.AddWithValue("idPetani", UserContext.CurrentUser!.IdUser);
                 cmd.Parameters.AddWithValue("idJenis", idJenis);
                 cmd.Parameters.AddWithValue("nama", namaProduk.Trim());
                 cmd.Parameters.AddWithValue("berat", beratKg);

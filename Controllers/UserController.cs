@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using WinFormsApp1.Helpers;
 using WinFormsApp1.Models;
+using WinFormsApp1.Repositories;
 
 namespace WinFormsApp1.Controllers
 {
     public class UserController
     {
-        private readonly WinFormsApp1.Models.UserRepository _userRepository;
+        private readonly WinFormsApp1.Repositories.UserRepository _userRepository;
 
         public UserController()
         {
-            _userRepository = new WinFormsApp1.Models.UserRepository();
+            _userRepository = new WinFormsApp1.Repositories.UserRepository();
         }
 
         public User GetProfilSaya()
@@ -100,7 +101,7 @@ namespace WinFormsApp1.Controllers
             }
         }
 
-        void HapusAkunSaya()
+        public bool HapusAkunSaya()
         {
             if (!UserContext.IsLoggedIn)
                 throw new UnauthorizedAccessException("Belum login.");
@@ -112,6 +113,7 @@ namespace WinFormsApp1.Controllers
             if (berhasil)
             {
                 UserContext.Logout();
+                return true;
             }
             else
             {

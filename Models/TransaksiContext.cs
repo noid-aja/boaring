@@ -15,7 +15,7 @@ namespace WinFormsApp1.Models
 
             using var cmdCari = new NpgsqlCommand(@"
                 select id_lelang, id_produk 
-                frin kapten.lelang 
+                from kapten.lelang 
                 where status = 'Berlangsung' and tgl_akhir <= @now", conn);
             cmdCari.Parameters.AddWithValue("now", DateTime.Now);
 

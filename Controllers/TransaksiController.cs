@@ -13,16 +13,17 @@ namespace WinFormsApp1.Controllers
             TransaksiContext.CekDanTutupLelangExpired();
         }
 
-        public bool PembeliBayarTagihan(int idTransaksi)
+        public bool AdminKonfirmasiPembayaranLunas(int idTransaksi)
         {
-            if (!UserContext.IsLoggedIn || !UserContext.IsPembeli)
+            if (!UserContext.IsLoggedIn || !UserContext.IsAdmin)
             {
-                MessageBox.Show("Hanya akun Pembeli yang bisa membayar!");
+                MessageBox.Show("Akses Ditolak! Hanya akun Admin yang bisa mengonfirmasi pembayaran lunas.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
+
             return TransaksiContext.AdminKonfirmasiLunas(idTransaksi);
         }
-
+  
         public bool GagalBayarHitAndRun(int idTransaksi)
         {
             if (!UserContext.IsLoggedIn || !UserContext.IsAdmin)

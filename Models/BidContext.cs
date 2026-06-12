@@ -23,7 +23,7 @@ namespace WinFormsApp1.Models
                 cmdLelang.Parameters.AddWithValue("idLelang", idLelang);
 
                 using var reader = cmdLelang.ExecuteReader();
-                if (!reader.Read()) throw new Exception("Data lelang tidak ditemukan!");
+                if (!reader.Read()) throw new Exception("Data lelang tidak ada");
 
                 decimal bidMinimum = reader.GetDecimal(0);
                 DateTime tglAkhir = reader.GetDateTime(1);
@@ -83,6 +83,44 @@ namespace WinFormsApp1.Models
                 MessageBox.Show(ex.Message, "Gagal Nge-Bid", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
+        }
+
+        public static List<Bid> AmbilRiwayatBidPembeli(int idPembeli)
+        {
+            var listBid = new List<Bid>();
+
+            try
+            {
+                using var conn = ConnectDB.GetConnection();
+                conn.Open();
+
+                using var cmd = new NpgsqlCommand(@"
+                    select id_bid, id_lelang, id_pembeli, nominal, tgl_bid 
+                    from kapten.bid 
+                    where id_pembeli = @idPembeli 
+                    order by tgl_bid DESC", conn);
+
+                cmd.Parameters.AddWithValue("idPembeli", idPembeli);
+
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    listBid.Add(new Bid(
+                        reader.GetInt32(0),
+                        reader.GetInt32(1),
+                        reader.GetInt32(2),
+                        reader.GetDecimal(3),
+                        reader.GetDateTime(4)
+                    ));
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("Gagal mengambil riwayat bid: " + ex.Message,
+                    "Error Database", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+            }
+
+            return listBid;
         }
     }
 }
