@@ -15,8 +15,8 @@ namespace WinFormsApp1.Models
 
             using var cmdCari = new NpgsqlCommand(@"
                 select id_lelang, id_produk 
-                FROM kapten.lelang 
-                WHERE status = 'Berlangsung' AND tgl_akhir <= @now", conn);
+                frin kapten.lelang 
+                where status = 'Berlangsung' and tgl_akhir <= @now", conn);
             cmdCari.Parameters.AddWithValue("now", DateTime.Now);
 
             var lelangExpiredList = new System.Collections.Generic.List<(int IdLelang, int IdProduk)>();
@@ -34,10 +34,10 @@ namespace WinFormsApp1.Models
                 try
                 {
                     using var cmdGetMaxBid = new NpgsqlCommand(@"
-                        SELECT id_bid, id_pembeli, nominal 
-                        FROM kapten.bid 
-                        WHERE id_lelang = @idLelang 
-                        ORDER BY nominal DESC LIMIT 1", conn);
+                        select id_bid, id_pembeli, nominal 
+                        from kapten.bid 
+                        where id_lelang = @idLelang 
+                        order by nominal desc limit 1", conn);
                     cmdGetMaxBid.Parameters.AddWithValue("idLelang", lelang.IdLelang);
 
                     int idBidPemenang = 0;
@@ -56,17 +56,17 @@ namespace WinFormsApp1.Models
 
                     if (idBidPemenang > 0)
                     {
-                        using var cmdUpdateLelang = new NpgsqlCommand("UPDATE kapten.lelang SET status = 'Selesai' WHERE id_lelang = @id", conn);
+                        using var cmdUpdateLelang = new NpgsqlCommand("update kapten.lelang set status = 'Selesai' where id_lelang = @id", conn);
                         cmdUpdateLelang.Parameters.AddWithValue("id", lelang.IdLelang);
                         cmdUpdateLelang.ExecuteNonQuery();
 
-                        using var cmdUpdateProduk = new NpgsqlCommand("UPDATE kapten.produk_kopi SET status = 'Terjual' WHERE id_produk = @id", conn);
+                        using var cmdUpdateProduk = new NpgsqlCommand("update kapten.produk_kopi set status = 'Terjual' where id_produk = @id", conn);
                         cmdUpdateProduk.Parameters.AddWithValue("id", lelang.IdProduk);
                         cmdUpdateProduk.ExecuteNonQuery();
 
                         using var cmdPemenang = new NpgsqlCommand(@"
-                            INSERT INTO kapten.pemenang_lelang (id_lelang, id_bid, tgl_ditetapkan) 
-                            VALUES (@idLelang, @idBid, @tgl) RETURNING id_pemenang", conn);
+                            insert into kapten.pemenang_lelang (id_lelang, id_bid, tgl_ditetapkan) 
+                            values (@idLelang, @idBid, @tgl) RETURNING id_pemenang", conn);
                         cmdPemenang.Parameters.AddWithValue("idLelang", lelang.IdLelang);
                         cmdPemenang.Parameters.AddWithValue("idBid", idBidPemenang);
                         cmdPemenang.Parameters.AddWithValue("tgl", DateTime.Now);
@@ -77,8 +77,8 @@ namespace WinFormsApp1.Models
                         decimal totalDiterimaPetani = nominalTertinggi - biayaKomisi;
 
                         using var cmdTransaksi = new NpgsqlCommand(@"
-                            INSERT INTO kapten.transaksi (id_pemenang, tgl_transaksi, total_bayar, persentase_komisi, biaya_komisi, total_diterima_petani, status) 
-                            VALUES (@idPemenang, @tgl, @total, @persen, @komisi, @diterima, 'BelumBayar')", conn);
+                            insert into kapten.transaksi (id_pemenang, tgl_transaksi, total_bayar, persentase_komisi, biaya_komisi, total_diterima_petani, status) 
+                            values (@idPemenang, @tgl, @total, @persen, @komisi, @diterima, 'BelumBayar')", conn);
                         cmdTransaksi.Parameters.AddWithValue("idPemenang", idPemenangGenerated);
                         cmdTransaksi.Parameters.AddWithValue("tgl", DateTime.Now);
                         cmdTransaksi.Parameters.AddWithValue("total", nominalTertinggi);
@@ -89,11 +89,11 @@ namespace WinFormsApp1.Models
                     }
                     else
                     {
-                        using var cmdUpdateLelang = new NpgsqlCommand("UPDATE kapten.lelang SET status = 'Dibatalkan' WHERE id_lelang = @id", conn);
+                        using var cmdUpdateLelang = new NpgsqlCommand("update kapten.lelang set status = 'Dibatalkan' where id_lelang = @id", conn);
                         cmdUpdateLelang.Parameters.AddWithValue("id", lelang.IdLelang);
                         cmdUpdateLelang.ExecuteNonQuery();
 
-                        using var cmdUpdateProduk = new NpgsqlCommand("UPDATE kapten.produk_kopi SET status = 'LolosQc' WHERE id_produk = @id", conn);
+                        using var cmdUpdateProduk = new NpgsqlCommand("update kapten.produk_kopi set status = 'LolosQc' where id_produk = @id", conn);
                         cmdUpdateProduk.Parameters.AddWithValue("id", lelang.IdProduk);
                         cmdUpdateProduk.ExecuteNonQuery();
                     }
@@ -114,15 +114,15 @@ namespace WinFormsApp1.Models
             using var trans = conn.BeginTransaction();
             try
             {
-                using var cmdTx = new NpgsqlCommand("UPDATE kapten.transaksi SET status = 'Lunas' WHERE id_transaksi = @id", conn);
+                using var cmdTx = new NpgsqlCommand("update kapten.transaksi set status = 'Lunas' where id_transaksi = @id", conn);
                 cmdTx.Parameters.AddWithValue("id", idTransaksi);
                 cmdTx.ExecuteNonQuery();
 
                 using var cmdGetProduk = new NpgsqlCommand(@"
-                    SELECT l.id_produk FROM kapten.transaksi t
-                    JOIN kapten.pemenang_lelang p ON t.id_pemenang = p.id_pemenang
-                    JOIN kapten.lelang l ON p.id_lelang = l.id_lelang
-                    WHERE t.id_transaksi = @id", conn);
+                    select l.id_produk FROM kapten.transaksi t
+                    join kapten.pemenang_lelang p on t.id_pemenang = p.id_pemenang
+                    join kapten.lelang l on p.id_lelang = l.id_lelang
+                    where t.id_transaksi = @id", conn);
                 cmdGetProduk.Parameters.AddWithValue("id", idTransaksi);
                 int idProduk = Convert.ToInt32(cmdGetProduk.ExecuteScalar());
 
@@ -148,15 +148,15 @@ namespace WinFormsApp1.Models
             using var trans = conn.BeginTransaction();
             try
             {
-                using var cmdTx = new NpgsqlCommand("UPDATE kapten.transaksi SET status = 'Dibatalkan' WHERE id_transaksi = @id", conn);
+                using var cmdTx = new NpgsqlCommand("update kapten.transaksi set status = 'Dibatalkan' where id_transaksi = @id", conn);
                 cmdTx.Parameters.AddWithValue("id", idTransaksi);
                 cmdTx.ExecuteNonQuery();
 
                 using var cmdGetProduk = new NpgsqlCommand(@"
-                    SELECT l.id_produk FROM kapten.transaksi t
-                    JOIN kapten.pemenang_lelang p ON t.id_pemenang = p.id_pemenang
-                    JOIN kapten.lelang l ON p.id_lelang = l.id_lelang
-                    WHERE t.id_transaksi = @id", conn);
+                    select l.id_produk FROM kapten.transaksi t
+                    join kapten.pemenang_lelang p on t.id_pemenang = p.id_pemenang
+                    join kapten.lelang l on p.id_lelang = l.id_lelang
+                    where t.id_transaksi = @id", conn);
                 cmdGetProduk.Parameters.AddWithValue("id", idTransaksi);
                 int idProduk = Convert.ToInt32(cmdGetProduk.ExecuteScalar());
 

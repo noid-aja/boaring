@@ -27,7 +27,7 @@ namespace WinFormsApp1.Controllers
         {
             if (!UserContext.IsLoggedIn || !UserContext.IsAdmin)
             {
-                MessageBox.Show("Hanya Admin yang berhak membatalkan dan memproses pembeli gagal bayar!", "Akses Ditolak", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Hanya Admin", "Akses Ditolak", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 

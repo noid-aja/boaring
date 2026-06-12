@@ -17,8 +17,8 @@ namespace WinFormsApp1.Models
             try
             {
                 using var cmdInspeksi = new NpgsqlCommand(@"
-                    INSERT INTO kapten.inspeksi (id_produk, id_inspektor, tgl_inspeksi, nilai, grade, harga_rekomendasi, catatan, is_lolos_qc) 
-                    VALUES (@idProduk, @idInspektor, @tgl, @nilai, '', @hargaRekomendasi, @catatan, @isLolos)", conn);
+                    insert into kapten.inspeksi (id_produk, id_inspektor, tgl_inspeksi, nilai, grade, harga_rekomendasi, catatan, is_lolos_qc) 
+                    values (@idProduk, @idInspektor, @tgl, @nilai, '', @hargaRekomendasi, @catatan, @isLolos)", conn);
 
                 cmdInspeksi.Parameters.AddWithValue("idProduk", idProduk);
                 cmdInspeksi.Parameters.AddWithValue("idInspektor", idInspektor);

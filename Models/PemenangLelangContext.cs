@@ -17,20 +17,20 @@ namespace WinFormsApp1.Models
                 conn.Open();
 
                 using var cmd = new NpgsqlCommand(@"
-                    SELECT 
+                    select 
                         pl.id_pemenang,
                         p.nama_produk,
                         u_petani.nama_lengkap AS nama_petani,
                         u_pembeli.nama_lengkap AS nama_pembeli,
                         b.nominal AS harga_menang,
                         pl.tgl_ditetapkan
-                    FROM kapten.pemenang_lelang pl
-                    JOIN kapten.bid b ON pl.id_bid = b.id_bid
-                    JOIN kapten.lelang l ON pl.id_lelang = l.id_lelang
-                    JOIN kapten.produk_kopi p ON l.id_produk = p.id_produk
-                    JOIN kapten.users u_petani ON p.id_petani = u_petani.id_user
-                    JOIN kapten.users u_pembeli ON b.id_pembeli = u_pembeli.id_user
-                    ORDER BY pl.tgl_ditetapkan DESC", conn);
+                    from kapten.pemenang_lelang pl
+                    join kapten.bid b on pl.id_bid = b.id_bid
+                    join kapten.lelang l on pl.id_lelang = l.id_lelang
+                    join kapten.produk_kopi p on l.id_produk = p.id_produk
+                    join kapten.users u_petani on p.id_petani = u_petani.id_user
+                    join kapten.users u_pembeli on b.id_pembeli = u_pembeli.id_user
+                    order by pl.tgl_ditetapkan desc", conn);
 
                 using var reader = cmd.ExecuteReader();
                 while (reader.Read())
