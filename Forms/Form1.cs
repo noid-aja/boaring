@@ -36,7 +36,7 @@ namespace WinFormsApp1
                     MessageBoxIcon.Information
                 );
 
-                FormDashboard dashboard = new FormDashboard("admin");
+                FormDashboard dashboard = new FormDashboard(user.Role);
                 dashboard.Show();
                 Hide();
             }

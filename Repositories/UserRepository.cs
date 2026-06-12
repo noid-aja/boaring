@@ -147,7 +147,9 @@ namespace WinFormsApp1.Repositories
             ON r.id_role = ur.id_role
         WHERE u.username = @username
           AND u.password = @password
-          AND u.is_aktif = TRUE;
+          AND u.is_aktif = TRUE
+          AND ur.is_role_aktif = TRUE
+        ORDER BY r.id_role;
         """;
 
             using NpgsqlCommand cmd = new NpgsqlCommand(query, conn);
@@ -178,7 +180,8 @@ namespace WinFormsApp1.Repositories
                         NoTelp = reader.IsDBNull(3)
                             ? null
                             : reader.GetString(3),
-                        IsAktif = reader.GetBoolean(4)
+                        IsAktif = reader.GetBoolean(4),
+                        Role = reader.GetString(5)
                     };
                 }
 

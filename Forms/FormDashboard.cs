@@ -1,29 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
+using System.Data;
 using System.Windows.Forms;
+using WinFormsApp1.Helpers;
+using WinFormsApp1.Repositories;
 
 namespace WinFormsApp1.Forms.AdminForm
 {
     public partial class FormDashboard : Form
     {
+        private readonly DashboardRepository _dashboardRepository = new DashboardRepository();
+
         private string roleAktif = "admin";
 
         public FormDashboard()
         {
             InitializeComponent();
+            btnLogout.Click -= btnLogout_Click;
+            btnLogout.Click += btnLogout_Click;
         }
 
         public FormDashboard(string role)
         {
             InitializeComponent();
-            roleAktif = role.ToLower();
+            roleAktif = role?.Trim().ToLower() ?? string.Empty;
+            btnLogout.Click -= btnLogout_Click;
+            btnLogout.Click += btnLogout_Click;
         }
 
         private void FormDashboard_Load(object sender, EventArgs e)
         {
-            AturDashboard(roleAktif);
+            try
+            {
+                if (string.IsNullOrWhiteSpace(roleAktif))
+                {
+                    MessageBox.Show(
+                        "Role user kosong. Cek hasil login dan mapping User.Role.",
+                        "Role Kosong",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning
+                    );
+                    return;
+                }
+
+                AturDashboard(roleAktif);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Gagal memuat dashboard:\n" + ex.Message,
+                    "Dashboard Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
         }
 
         private void AturDashboard(string role)
@@ -34,21 +64,21 @@ namespace WinFormsApp1.Forms.AdminForm
                 lblHeaderTitle.Text = "Dashboard Admin";
 
                 AturMenu(new List<string>
-        {
-            "Beranda",
-            "Kelola User",
-            "Jenis Kopi",
-            "Produk Kopi",
-            "Lelang",
-            "Transaksi",
-            "Laporan"
-        });
+                {
+                    "Beranda",
+                    "Kelola User",
+                    "Jenis Kopi",
+                    "Produk Kopi",
+                    "Lelang",
+                    "Transaksi",
+                    "Laporan"
+                });
 
                 AturCard(
-                    "6", "Total User",
-                    "4", "Pending QC",
-                    "0", "Lolos QC",
-                    "0", "Lelang Aktif"
+                    _dashboardRepository.CountTotalUser().ToString(), "Total User",
+                    _dashboardRepository.CountProdukByStatus("pending_inspeksi").ToString(), "Pending QC",
+                    _dashboardRepository.CountProdukByStatus("lolos_qc").ToString(), "Lolos QC",
+                    _dashboardRepository.CountLelangByStatus("berlangsung").ToString(), "Lelang Aktif"
                 );
 
                 IsiTabelAdmin();
@@ -59,23 +89,25 @@ namespace WinFormsApp1.Forms.AdminForm
                 lblHeaderTitle.Text = "Dashboard Petani";
 
                 AturMenu(new List<string>
-        {
-            "Beranda",
-            "Input Produk",
-            "Produk Saya",
-            "Hasil QC",
-            "Jadwal Lelang",
-            "Transaksi"
-        });
+                {
+                    "Beranda",
+                    "Input Produk",
+                    "Produk Saya",
+                    "Hasil QC",
+                    "Jadwal Lelang",
+                    "Transaksi"
+                });
+
+                int idPetani = UserContext.IdUser;
 
                 AturCard(
-                    "0", "Produk Saya",
-                    "0", "Pending QC",
-                    "0", "Lolos QC",
-                    "0", "Terjual"
+                    _dashboardRepository.CountProdukPetani(idPetani).ToString(), "Produk Saya",
+                    _dashboardRepository.CountProdukPetaniByStatus(idPetani, "pending_inspeksi").ToString(), "Pending QC",
+                    _dashboardRepository.CountProdukPetaniByStatus(idPetani, "lolos_qc").ToString(), "Lolos QC",
+                    _dashboardRepository.CountProdukPetaniByStatus(idPetani, "terjual").ToString(), "Terjual"
                 );
 
-                IsiTabelPetani();
+                IsiTabelPetani(idPetani);
             }
             else if (role == "pembeli")
             {
@@ -83,19 +115,21 @@ namespace WinFormsApp1.Forms.AdminForm
                 lblHeaderTitle.Text = "Dashboard Pembeli";
 
                 AturMenu(new List<string>
-        {
-            "Beranda",
-            "Lihat Lelang",
-            "Ikut Bid",
-            "Riwayat Bid",
-            "Transaksi Saya"
-        });
+                {
+                    "Beranda",
+                    "Lihat Lelang",
+                    "Ikut Bid",
+                    "Riwayat Bid",
+                    "Transaksi Saya"
+                });
+
+                int idPembeli = UserContext.IdUser;
 
                 AturCard(
-                    "0", "Lelang Aktif",
-                    "0", "Bid Saya",
-                    "0", "Menang",
-                    "0", "Belum Bayar"
+                    _dashboardRepository.CountLelangByStatus("berlangsung").ToString(), "Lelang Aktif",
+                    _dashboardRepository.CountBidPembeli(idPembeli).ToString(), "Bid Saya",
+                    _dashboardRepository.CountMenangPembeli(idPembeli).ToString(), "Menang",
+                    _dashboardRepository.CountTransaksiPembeliByStatus(idPembeli, "belum_bayar").ToString(), "Belum Bayar"
                 );
 
                 IsiTabelPembeli();
@@ -106,30 +140,41 @@ namespace WinFormsApp1.Forms.AdminForm
                 lblHeaderTitle.Text = "Dashboard Inspektor";
 
                 AturMenu(new List<string>
-        {
-            "Beranda",
-            "Produk Pending",
-            "Input Inspeksi",
-            "Riwayat Inspeksi",
-            "Laporan QC"
-        });
+                {
+                    "Beranda",
+                    "Produk Pending",
+                    "Input Inspeksi",
+                    "Riwayat Inspeksi",
+                    "Laporan QC"
+                });
+
+                int idInspektor = UserContext.IdUser;
 
                 AturCard(
-                    "4", "Pending QC",
-                    "0", "Sudah Dicek",
-                    "0", "Lolos QC",
-                    "0", "Ditolak QC"
+                    _dashboardRepository.CountProdukByStatus("pending_inspeksi").ToString(), "Pending QC",
+                    _dashboardRepository.CountInspeksiByInspektor(idInspektor).ToString(), "Sudah Dicek",
+                    _dashboardRepository.CountInspeksiByInspektorAndStatus(idInspektor, "lolos_qc").ToString(), "Lolos QC",
+                    _dashboardRepository.CountInspeksiByInspektorAndStatus(idInspektor, "ditolak_qc").ToString(), "Ditolak QC"
                 );
 
                 IsiTabelInspektor();
             }
+            else
+            {
+                MessageBox.Show(
+                    "Role tidak dikenali: " + role,
+                    "Role Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+            }
         }
 
         private void AturCard(
-           string value1, string title1,
-           string value2, string title2,
-           string value3, string title3,
-           string value4, string title4)
+            string value1, string title1,
+            string value2, string title2,
+            string value3, string title3,
+            string value4, string title4)
         {
             lblCardValue1.Text = value1;
             lblCardTitle1.Text = title1;
@@ -148,13 +193,13 @@ namespace WinFormsApp1.Forms.AdminForm
         {
             Button[] tombolMenu =
             {
-            btnMenu1,
-            btnMenu2,
-            btnMenu3,
-            btnMenu4,
-            btnMenu5,
-            btnMenu6,
-            btnMenu7
+                btnMenu1,
+                btnMenu2,
+                btnMenu3,
+                btnMenu4,
+                btnMenu5,
+                btnMenu6,
+                btnMenu7
             };
 
             for (int i = 0; i < tombolMenu.Length; i++)
@@ -177,92 +222,87 @@ namespace WinFormsApp1.Forms.AdminForm
 
         private void Menu_Click(object sender, EventArgs e)
         {
-            Button btn = sender as Button;
-
-            if (btn == null || btn.Tag == null)
+            if (sender is not Button btn || btn.Tag == null)
                 return;
 
-            string menu = btn.Tag.ToString();
+            string menu = btn.Tag.ToString() ?? string.Empty;
 
             MessageBox.Show("Menu dipilih: " + menu);
+        }
+
+        private void SetTable(DataTable table)
+        {
+            dgvDashboard.DataSource = null;
+            dgvDashboard.Columns.Clear();
+            dgvDashboard.Rows.Clear();
+            dgvDashboard.DataSource = table;
         }
 
         private void IsiTabelAdmin()
         {
             lblTableTitle.Text = "Data Produk Kopi";
-
-            dgvDashboard.Columns.Clear();
-            dgvDashboard.Rows.Clear();
-
-            dgvDashboard.Columns.Add("produk", "Produk");
-            dgvDashboard.Columns.Add("petani", "Petani");
-            dgvDashboard.Columns.Add("jenis", "Jenis Kopi");
-            dgvDashboard.Columns.Add("berat", "Berat");
-            dgvDashboard.Columns.Add("status", "Status");
-            dgvDashboard.Columns.Add("grade", "Grade");
-
-            dgvDashboard.Rows.Add("Kopi Arabika Gayo", "Pak Budi", "Arabika", "25 kg", "pending_inspeksi", "-");
-            dgvDashboard.Rows.Add("Kopi Robusta Lampung", "Pak Joko", "Robusta", "40 kg", "pending_inspeksi", "-");
+            SetTable(_dashboardRepository.GetProdukAdmin());
         }
 
-        private void IsiTabelPetani()
+        private void IsiTabelPetani(int idPetani)
         {
             lblTableTitle.Text = "Status Produk Saya";
-
-            dgvDashboard.Columns.Clear();
-            dgvDashboard.Rows.Clear();
-
-            dgvDashboard.Columns.Add("produk", "Produk");
-            dgvDashboard.Columns.Add("jenis", "Jenis Kopi");
-            dgvDashboard.Columns.Add("berat", "Berat");
-            dgvDashboard.Columns.Add("harga", "Harga Pengajuan");
-            dgvDashboard.Columns.Add("status", "Status");
-            dgvDashboard.Columns.Add("grade", "Grade");
-
-            dgvDashboard.Rows.Add("Belum ada produk", "-", "-", "-", "-", "-");
+            SetTable(_dashboardRepository.GetProdukPetani(idPetani));
         }
 
         private void IsiTabelPembeli()
         {
             lblTableTitle.Text = "Jadwal Lelang Kopi";
-
-            dgvDashboard.Columns.Clear();
-            dgvDashboard.Rows.Clear();
-
-            dgvDashboard.Columns.Add("produk", "Produk");
-            dgvDashboard.Columns.Add("jenis", "Jenis Kopi");
-            dgvDashboard.Columns.Add("grade", "Grade");
-            dgvDashboard.Columns.Add("bid", "Bid Minimum");
-            dgvDashboard.Columns.Add("lokasi", "Lokasi");
-            dgvDashboard.Columns.Add("status", "Status");
-
-            dgvDashboard.Rows.Add("Belum ada lelang", "-", "-", "-", "-", "-");
+            SetTable(_dashboardRepository.GetLelangPembeli());
         }
 
         private void IsiTabelInspektor()
         {
             lblTableTitle.Text = "Produk Menunggu Inspeksi";
+            SetTable(_dashboardRepository.GetProdukPendingInspeksi());
+        }
 
-            dgvDashboard.Columns.Clear();
-            dgvDashboard.Rows.Clear();
+        private void label1_Click_1(object sender, EventArgs e)
+        {
+        }
 
-            dgvDashboard.Columns.Add("produk", "Produk");
-            dgvDashboard.Columns.Add("petani", "Petani");
-            dgvDashboard.Columns.Add("jenis", "Jenis Kopi");
-            dgvDashboard.Columns.Add("berat", "Berat");
-            dgvDashboard.Columns.Add("harga", "Harga Pengajuan");
-            dgvDashboard.Columns.Add("status", "Status");
+        private void button1_Click(object sender, EventArgs e)
+        {
+        }
 
-            dgvDashboard.Rows.Add("Kopi Arabika Gayo", "Pak Budi", "Arabika", "25 kg", "500000", "pending_inspeksi");
-            dgvDashboard.Rows.Add("Kopi Robusta Lampung", "Pak Joko", "Robusta", "40 kg", "600000", "pending_inspeksi");
+        private void label2_Click_1(object sender, EventArgs e)
+        {
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void lblTableTitle_Click(object sender, EventArgs e)
+        {
         }
         private void btnLogout_Click(object sender, EventArgs e)
         {
-            this.Close();
+            DialogResult result = MessageBox.Show(
+                "Apakah Anda yakin ingin logout?",
+                "Konfirmasi Logout",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
 
-            // Kalau form login lu Form1
-            Form1 login = new Form1();
-            login.Show();
+            if (result == DialogResult.Yes)
+            {
+                UserContext.Clear();
+
+                Form1 login = new Form1();
+                login.Show();
+
+                this.Close();
+            }
         }
     }
 }

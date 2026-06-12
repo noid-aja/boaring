@@ -11,9 +11,11 @@
         public string Password { get; set; } = string.Empty;
 
         public string? NoTelp { get; set; }
-        public string Email { get; set; } = string.Empty;
-        public bool IsAktif { get; set; } = true;
-        public List<string> Roles { get; set; } = new();
-    }
 
+        public bool IsAktif { get; set; } = true;
+
+        public List<string> Roles { get; set; } = new();
+
+        public string Role { get; set; } = string.Empty;
+    }
 }
