@@ -1,4 +1,8 @@
-﻿namespace WinFormsApp1.Models
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace WinFormsApp1.Models
 {
     public class User
     {
@@ -25,10 +29,28 @@
         }
 
         public bool IsInRole(string role)
-            => Roles.Any(r => r.NamaRole.Equals(role, StringComparison.OrdinalIgnoreCase));
+        {
+            return Roles.Any(r => r.NamaRole.Equals(role, StringComparison.OrdinalIgnoreCase));
+        }
+        public List<RoleUser> GetOopRoles()
+        {
+            var oopList = new List<RoleUser>();
+            foreach (var r in Roles)
+            {
+                try
+                {
+                    oopList.Add(RoleFactory.Create(this, r.NamaRole));
+                }
+                catch
+                {
+                }
+            }
+            return oopList;
+        }
 
         public override string ToString()
-            => $"[{IdUser}] {NamaLengkap} ({Username})";
+        {
+            return $"[{IdUser}] {NamaLengkap} ({Username})";
+        }
     }
-
 }

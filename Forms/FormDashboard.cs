@@ -10,7 +10,6 @@ namespace WinFormsApp1.Forms.AdminForm
     public partial class FormDashboard : Form
     {
         private readonly DashboardRepository _dashboardRepository = new DashboardRepository();
-
         private string roleAktif = "admin";
 
         public FormDashboard()
@@ -35,7 +34,7 @@ namespace WinFormsApp1.Forms.AdminForm
                 if (string.IsNullOrWhiteSpace(roleAktif))
                 {
                     MessageBox.Show(
-                        "Role user kosong. Cek hasil login dan mapping User.Role.",
+                        "Role user kosong. Cek hasil login dan mapping User.Roles.",
                         "Role Kosong",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning
@@ -58,6 +57,14 @@ namespace WinFormsApp1.Forms.AdminForm
 
         private void AturDashboard(string role)
         {
+            if (!UserContext.IsLoggedIn())
+            {
+                MessageBox.Show("Sesi login Anda tidak valid. Silakan login kembali.", "Sesi Habis", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int currentIdUser = UserContext.CurrentUser.IdUser;
+
             if (role == "admin")
             {
                 lblSidebarTitle.Text = "Dashboard Admin";
@@ -75,9 +82,9 @@ namespace WinFormsApp1.Forms.AdminForm
 
                 AturCard(
                     _dashboardRepository.CountTotalUser().ToString(), "Total User",
-                    _dashboardRepository.CountProdukByStatus("pending_inspeksi").ToString(), "Pending QC",
-                    _dashboardRepository.CountProdukByStatus("lolos_qc").ToString(), "Lolos QC",
-                    _dashboardRepository.CountLelangByStatus("berlangsung").ToString(), "Lelang Aktif"
+                    _dashboardRepository.CountProdukByStatus("PendingInspeksi").ToString(), "Pending QC",
+                    _dashboardRepository.CountProdukByStatus("LolosQc").ToString(), "Lolos QC",
+                    _dashboardRepository.CountLelangByStatus("Berlangsung").ToString(), "Lelang Aktif"
                 );
 
                 IsiTabelAdmin();
@@ -96,16 +103,14 @@ namespace WinFormsApp1.Forms.AdminForm
                     "Transaksi"
                 });
 
-                int idPetani = UserContext.IdUser;
-
                 AturCard(
-                    _dashboardRepository.CountProdukPetani(idPetani).ToString(), "Produk Saya",
-                    _dashboardRepository.CountProdukPetaniByStatus(idPetani, "pending_inspeksi").ToString(), "Pending QC",
-                    _dashboardRepository.CountProdukPetaniByStatus(idPetani, "lolos_qc").ToString(), "Lolos QC",
-                    _dashboardRepository.CountProdukPetaniByStatus(idPetani, "terjual").ToString(), "Terjual"
+                    _dashboardRepository.CountProdukPetani(currentIdUser).ToString(), "Produk Saya",
+                    _dashboardRepository.CountProdukPetaniByStatus(currentIdUser, "PendingInspeksi").ToString(), "Pending QC",
+                    _dashboardRepository.CountProdukPetaniByStatus(currentIdUser, "LolosQc").ToString(), "Lolos QC",
+                    _dashboardRepository.CountProdukPetaniByStatus(currentIdUser, "Terjual").ToString(), "Terjual"
                 );
 
-                IsiTabelPetani(idPetani);
+                IsiTabelPetani(currentIdUser);
             }
             else if (role == "pembeli")
             {
@@ -120,13 +125,11 @@ namespace WinFormsApp1.Forms.AdminForm
                     "Transaksi Saya"
                 });
 
-                int idPembeli = UserContext.IdUser;
-
                 AturCard(
-                    _dashboardRepository.CountLelangByStatus("berlangsung").ToString(), "Lelang Aktif",
-                    _dashboardRepository.CountBidPembeli(idPembeli).ToString(), "Bid Saya",
-                    _dashboardRepository.CountMenangPembeli(idPembeli).ToString(), "Menang",
-                    _dashboardRepository.CountTransaksiPembeliByStatus(idPembeli, "belum_bayar").ToString(), "Belum Bayar"
+                    _dashboardRepository.CountLelangByStatus("Berlangsung").ToString(), "Lelang Aktif",
+                    _dashboardRepository.CountBidPembeli(currentIdUser).ToString(), "Bid Saya",
+                    _dashboardRepository.CountMenangPembeli(currentIdUser).ToString(), "Menang",
+                    _dashboardRepository.CountTransaksiPembeliByStatus(currentIdUser, "BelumBayar").ToString(), "Belum Bayar"
                 );
 
                 IsiTabelPembeli();
@@ -144,13 +147,13 @@ namespace WinFormsApp1.Forms.AdminForm
                     "Laporan QC"
                 });
 
-                int idInspektor = UserContext.IdUser;
+                int idInspektor = UserContext.CurrentUser != null ? UserContext.CurrentUser.IdUser : 0;
 
                 AturCard(
-                    _dashboardRepository.CountProdukByStatus("pending_inspeksi").ToString(), "Pending QC",
+                    _dashboardRepository.CountProdukByStatus("PendingInspeksi").ToString(), "Pending QC",
                     _dashboardRepository.CountInspeksiByInspektor(idInspektor).ToString(), "Sudah Dicek",
-                    _dashboardRepository.CountInspeksiByInspektorAndStatus(idInspektor, "lolos_qc").ToString(), "Lolos QC",
-                    _dashboardRepository.CountInspeksiByInspektorAndStatus(idInspektor, "ditolak_qc").ToString(), "Ditolak QC"
+                    _dashboardRepository.CountProdukByStatus("LolosQc").ToString(), "Lolos QC",
+                    _dashboardRepository.CountProdukByStatus("DitolakQc").ToString(), "Ditolak QC"
                 );
 
                 IsiTabelInspektor();
@@ -187,16 +190,7 @@ namespace WinFormsApp1.Forms.AdminForm
 
         private void AturMenu(List<string> menus)
         {
-            Button[] tombolMenu =
-            {
-                btnMenu1,
-                btnMenu2,
-                btnMenu3,
-                btnMenu4,
-                btnMenu5,
-                btnMenu6,
-                btnMenu7
-            };
+            Button[] tombolMenu = { btnMenu1, btnMenu2, btnMenu3, btnMenu4, btnMenu5, btnMenu6, btnMenu7 };
 
             for (int i = 0; i < tombolMenu.Length; i++)
             {
@@ -218,15 +212,12 @@ namespace WinFormsApp1.Forms.AdminForm
 
         private void Menu_Click(object sender, EventArgs e)
         {
-            if (sender is not Button btn || btn.Tag == null)
-                return;
-
-            string menu = (btn.Tag.ToString() ?? string.Empty).Trim().ToLower();
+            if (sender is not Button btn || btn.Tag == null) return;
+            string menu = btn.Tag.ToString().Trim().ToLower();
 
             switch (menu)
             {
                 case "beranda":
-                    // close any active child and show dashboard components
                     if (activeForm != null)
                     {
                         activeForm.Close();
@@ -240,6 +231,11 @@ namespace WinFormsApp1.Forms.AdminForm
                 case "jenis kopi":
                     openChildForm(new jeniskopi());
                     break;
+                case "input inspeksi":
+                case "produk pending":
+                    // SINKRONISASI: Menyebut nama form secara eksplisit agar tidak tabrakan namespace
+                    openChildForm(new WinFormsApp1.Forms.AdminForm.Inspeksi());
+                    break;
                 default:
                     MessageBox.Show("Menu dipilih: " + btn.Tag.ToString());
                     break;
@@ -250,69 +246,23 @@ namespace WinFormsApp1.Forms.AdminForm
         {
             dgvDashboard.DataSource = null;
             dgvDashboard.Columns.Clear();
-            dgvDashboard.Rows.Clear();
             dgvDashboard.DataSource = table;
         }
 
-        private void IsiTabelAdmin()
-        {
-            lblTableTitle.Text = "Data Produk Kopi";
-            SetTable(_dashboardRepository.GetProdukAdmin());
-        }
+        private void IsiTabelAdmin() => SetTable(_dashboardRepository.GetProdukAdmin());
+        private void IsiTabelPetani(int idPetani) => SetTable(_dashboardRepository.GetProdukPetani(idPetani));
+        private void IsiTabelPembeli() => SetTable(_dashboardRepository.GetLelangPembeli());
+        private void IsiTabelInspektor() => SetTable(_dashboardRepository.GetProdukPendingInspeksi());
 
-        private void IsiTabelPetani(int idPetani)
-        {
-            lblTableTitle.Text = "Status Produk Saya";
-            SetTable(_dashboardRepository.GetProdukPetani(idPetani));
-        }
-
-        private void IsiTabelPembeli()
-        {
-            lblTableTitle.Text = "Jadwal Lelang Kopi";
-            SetTable(_dashboardRepository.GetLelangPembeli());
-        }
-
-        private void IsiTabelInspektor()
-        {
-            lblTableTitle.Text = "Produk Menunggu Inspeksi";
-            SetTable(_dashboardRepository.GetProdukPendingInspeksi());
-        }
-
-        private void label1_Click_1(object sender, EventArgs e)
-        {
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void label2_Click_1(object sender, EventArgs e)
-        {
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void label8_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void lblTableTitle_Click(object sender, EventArgs e)
-        {
-        }
         private void btnLogout_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show(
-                "Apakah Anda yakin ingin logout?",
-                "Konfirmasi Logout",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question
-            );
-
+            DialogResult result = MessageBox.Show("Apakah Anda yakin ingin logout?",
+                                                  "Konfirmasi Logout", 
+                                                  MessageBoxButtons.YesNo, 
+                                                  MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
             {
-                UserContext.Clear();
+                UserContext.Logout();
 
                 Form1 login = new Form1();
                 login.Show();
@@ -321,34 +271,44 @@ namespace WinFormsApp1.Forms.AdminForm
             }
         }
 
-        private void panel8_Paint(object sender, PaintEventArgs e)
+        private Form activeForm = null;
+        private void openChildForm(Form child)
         {
+            HideDashboardComponents();
+            if (activeForm != null) activeForm.Close();
 
+            activeForm = child;
+            child.TopLevel = false;
+            child.FormBorderStyle = FormBorderStyle.None;
+            child.Dock = DockStyle.Fill;
+            panel1.Controls.Add(child);
+            panel1.Tag = child;
+            child.BringToFront();
+            child.Show();
         }
 
-        private void panel3_Paint(object sender, PaintEventArgs e)
+        private void HideDashboardComponents()
         {
-
+            panel4.Visible = false;
+            panel5.Visible = false;
+            panel6.Visible = false;
+            panel7.Visible = false;
+            panel8.Visible = false;
+            lblTableTitle.Visible = false;
         }
 
-        private void panel4_Paint(object sender, PaintEventArgs e)
+        private void ShowDashboardComponents()
         {
-
-        }
-
-        private void lblSidebarTitle_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void btnLogout_Click_1(object sender, EventArgs e)
-        {
-
+            panel4.Visible = true;
+            panel5.Visible = true;
+            panel6.Visible = true;
+            panel7.Visible = true;
+            panel8.Visible = true;
+            lblTableTitle.Visible = true;
         }
 
         private void btnMenu3_Click(object sender, EventArgs e)
         {
-            // menu 3: for admin show Jenis Kopi, for inspektor open Inspeksi form
             try
             {
                 if (string.Equals(roleAktif, "admin", StringComparison.OrdinalIgnoreCase))
@@ -357,102 +317,62 @@ namespace WinFormsApp1.Forms.AdminForm
                 }
                 else if (string.Equals(roleAktif, "inspektor", StringComparison.OrdinalIgnoreCase))
                 {
-                    openChildForm(new Inspeksi());
-                }
-                else
-                {
-                    // fallback: open jeniskopi
-                    openChildForm(new jeniskopi());
+                    openChildForm(new WinFormsApp1.Forms.AdminForm.Inspeksi());
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Gagal membuka form: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
         }
 
-        private Form activeForm = null;
-        private void openChildForm(Form child)
+        private void btnMenu2_Click(object sender, EventArgs e) => openChildForm(new KelolaUser());
+
+        // Designer-generated event handler stubs (prevent missing method errors)
+        private void lblSidebarTitle_Click(object sender, EventArgs e)
         {
-            // hide dashboard components before showing child
-            HideDashboardComponents();
-
-            if (activeForm != null)
-                activeForm.Close();
-
-            activeForm = child;
-            child.TopLevel = false;
-            child.FormBorderStyle = FormBorderStyle.None;
-            child.Dock = DockStyle.Fill;
-            panel1.Controls.Add(child);
-            panel1.Tag = child;
-            // do not auto-restore dashboard when a child is closed due to switching.
-            // restoring is performed explicitly when user returns to dashboard (e.g. Beranda).
-
-            child.BringToFront();
-            child.Show();
+            // Intentionally left blank - no action required currently
         }
 
-        private void HideDashboardComponents()
+        private void panel4_Paint(object sender, PaintEventArgs e)
         {
-            try
-            {
-                panel4.Visible = false;
-                panel5.Visible = false;
-                panel6.Visible = false;
-                panel7.Visible = false;
-                panel8.Visible = false;
-                lblTableTitle.Visible = false;
-            }
-            catch { }
-        }
-
-        private void ShowDashboardComponents()
-        {
-            try
-            {
-                panel4.Visible = true;
-                panel5.Visible = true;
-                panel6.Visible = true;
-                panel7.Visible = true;
-                panel8.Visible = true;
-                lblTableTitle.Visible = true;
-            }
-            catch { }
-        }
-
-        private void btnOpenChildSmart_Click(object sender, EventArgs e)
-        {
-        }
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void panel5_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void panel6_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void btnMenu2_Click(object sender, EventArgs e)
-        {
-            openChildForm(new KelolaUser());
+            // Intentionally left blank - custom painting not required
         }
 
         private void lblCardValue1_Click(object sender, EventArgs e)
         {
+            // Intentionally left blank - click not handled
+        }
 
+        private void panel5_Paint(object sender, PaintEventArgs e)
+        {
+            // Intentionally left blank - custom painting not required
+        }
+
+        private void panel6_Paint(object sender, PaintEventArgs e)
+        {
+            // Intentionally left blank - custom painting not required
         }
 
         private void dgvDashboard_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            // Intentionally left blank - no special cell handling at the moment
+        }
 
+        private void panel8_Paint(object sender, PaintEventArgs e)
+        {
+            // Intentionally left blank - custom painting not required
+        }
+
+        private void btnLogout_Click_1(object sender, EventArgs e)
+        {
+            // Reuse existing logout logic if designer wired to a different handler name
+            btnLogout_Click(sender, e);
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+            // Intentionally left blank - custom painting not required
         }
     }
 }

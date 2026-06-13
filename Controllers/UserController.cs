@@ -4,7 +4,6 @@ using System.Linq;
 using WinFormsApp1.Helpers;
 using WinFormsApp1.Models;
 using WinFormsApp1.Repositories;
-using WinFormsApp1.Repositories.UserRepository;
 
 namespace WinFormsApp1.Controllers
 {
@@ -19,7 +18,7 @@ namespace WinFormsApp1.Controllers
 
         public User GetProfilSaya()
         {
-            if (!UserContext.IsLoggedIn)
+            if (!UserContext.IsLoggedIn())
                 throw new UnauthorizedAccessException("Belum login.");
 
             return UserContext.CurrentUser!;
@@ -27,10 +26,10 @@ namespace WinFormsApp1.Controllers
 
         public void AdminDaftarkanInspektor(string namaLengkap, string username, string password, string? noTelp)
         {
-            if (!UserContext.IsLoggedIn)
+            if (!UserContext.IsLoggedIn())
                 throw new UnauthorizedAccessException("Akses ditolak. Anda belum login.");
 
-            if (!UserContext.IsAdmin)
+            if (!UserContext.IsAdmin())
                 throw new UnauthorizedAccessException("Akses ditolak. Hanya Admin yang dapat mendaftarkan Inspektor.");
 
             if (string.IsNullOrWhiteSpace(namaLengkap) || string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
@@ -57,7 +56,7 @@ namespace WinFormsApp1.Controllers
 
         public bool HapusAkunSaya()
         {
-            if (!UserContext.IsLoggedIn)
+            if (!UserContext.IsLoggedIn())
                 throw new UnauthorizedAccessException("Belum login.");
 
             int currentIdUser = UserContext.CurrentUser!.IdUser;
@@ -77,7 +76,7 @@ namespace WinFormsApp1.Controllers
 
         public void EditProfil(string namaLengkap, string? noTelp)
         {
-            if (!UserContext.IsLoggedIn)
+            if (!UserContext.IsLoggedIn())
                 throw new UnauthorizedAccessException("Belum login.");
 
             if (string.IsNullOrWhiteSpace(namaLengkap))
@@ -101,7 +100,7 @@ namespace WinFormsApp1.Controllers
 
         public void GantiPassword(string passwordLama, string passwordBaru, string konfirmasiPassword)
         {
-            if (!UserContext.IsLoggedIn)
+            if (!UserContext.IsLoggedIn())
                 throw new UnauthorizedAccessException("Belum login.");
 
             if (string.IsNullOrWhiteSpace(passwordLama))
@@ -132,7 +131,7 @@ namespace WinFormsApp1.Controllers
 
         public void TambahRoleSaya(string role)
         {
-            if (!UserContext.IsLoggedIn)
+            if (!UserContext.IsLoggedIn())
                 throw new UnauthorizedAccessException("Belum login.");
 
             if (role != "petani" && role != "pembeli")
@@ -152,7 +151,7 @@ namespace WinFormsApp1.Controllers
 
         public void HapusRoleSaya(string role)
         {
-            if (!UserContext.IsLoggedIn)
+            if (!UserContext.IsLoggedIn())
                 throw new UnauthorizedAccessException("Belum login.");
 
             if (role != "petani" && role != "pembeli")
@@ -178,7 +177,7 @@ namespace WinFormsApp1.Controllers
 
         public List<string> GetRoleSaya()
         {
-            if (!UserContext.IsLoggedIn)
+            if (!UserContext.IsLoggedIn())
                 throw new UnauthorizedAccessException("Belum login.");
 
             return UserContext.CurrentUser!.Roles.Select(r => r.NamaRole).ToList();

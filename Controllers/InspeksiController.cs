@@ -10,13 +10,13 @@ namespace WinFormsApp1.Controllers
     {
         public bool KirimHasilQc(int idProduk, int nilai, decimal hargaRekomendasi, string? catatan, bool isLolos)
         {
-            if (!UserContext.IsLoggedIn)
+            if (!UserContext.IsLoggedIn())
             {
                 MessageBox.Show("Sesi login habis", "Akses Ditolak", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
-            if (!UserContext.IsInspektor)
+            if (!UserContext.IsInspektor())
             {
                 MessageBox.Show("Akses ditolak.", "Bukan Inspektor", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;

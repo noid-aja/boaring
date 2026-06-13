@@ -15,7 +15,7 @@ namespace WinFormsApp1.Controllers
 
         public bool AdminKonfirmasiPembayaranLunas(int idTransaksi)
         {
-            if (!UserContext.IsLoggedIn || !UserContext.IsAdmin)
+            if (!UserContext.IsLoggedIn() || !UserContext.IsAdmin())
             {
                 MessageBox.Show("Akses Ditolak! Hanya akun Admin yang bisa mengonfirmasi pembayaran lunas.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
@@ -26,7 +26,7 @@ namespace WinFormsApp1.Controllers
   
         public bool GagalBayarHitAndRun(int idTransaksi)
         {
-            if (!UserContext.IsLoggedIn || !UserContext.IsAdmin)
+            if (!UserContext.IsLoggedIn() || !UserContext.IsAdmin())
             {
                 MessageBox.Show("Hanya Admin", "Akses Ditolak", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;

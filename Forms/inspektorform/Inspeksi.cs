@@ -13,7 +13,6 @@ namespace WinFormsApp1.Forms.AdminForm
         {
             InitializeComponent();
             LoadPendingProducts();
-            // inspector id is taken from current logged user (UserContext) when submitting
         }
 
         private void Inspeksi_Load(object sender, EventArgs e)
@@ -75,10 +74,16 @@ namespace WinFormsApp1.Forms.AdminForm
 
             int idProduk = Convert.ToInt32(dgvPending.SelectedRows[0].Cells["id_produk"].Value);
 
-            int idInspektor = UserContext.IdUser;
+            if (!UserContext.IsLoggedIn())
+            {
+                MessageBox.Show("Sesi inspektor habis. Silakan login kembali.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int idInspektor = UserContext.CurrentUser != null ? UserContext.CurrentUser.IdUser : 0;
             if (idInspektor <= 0)
             {
-                MessageBox.Show("ID inspektor tidak tersedia. Silakan login terlebih dahulu.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Gagal membaca ID Inspektor yang sedang aktif.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -102,15 +107,14 @@ namespace WinFormsApp1.Forms.AdminForm
             {
                 using var conn = ConnectDB.GetConnection();
                 conn.Open();
-                // upsert inspeksi by id_produk
                 using var cmd = new NpgsqlCommand(@"INSERT INTO kapten.inspeksi(id_produk, id_inspektor, nilai, harga_rekomendasi, catatan)
-VALUES(@idproduk, @idinspektor, @nilai, @harga, @cat)
-ON CONFLICT (id_produk) DO UPDATE
-  SET id_inspektor = EXCLUDED.id_inspektor,
-      nilai = EXCLUDED.nilai,
-      harga_rekomendasi = EXCLUDED.harga_rekomendasi,
-      catatan = EXCLUDED.catatan,
-      tgl_inspeksi = CURRENT_DATE;", conn);
+                    VALUES(@idproduk, @idinspektor, @nilai, @harga, @cat)
+                    ON CONFLICT (id_produk) DO UPDATE
+                    SET id_inspektor = EXCLUDED.id_inspektor,
+                    nilai = EXCLUDED.nilai,
+                    harga_rekomendasi = EXCLUDED.harga_rekomendasi,
+                    catatan = EXCLUDED.catatan,
+                    tgl_inspeksi = CURRENT_DATE;", conn);
 
                 cmd.Parameters.AddWithValue("@idproduk", idProduk);
                 cmd.Parameters.AddWithValue("@idinspektor", idInspektor);
@@ -125,7 +129,6 @@ ON CONFLICT (id_produk) DO UPDATE
                     cmd.Parameters.AddWithValue("@cat", DBNull.Value);
 
                 cmd.ExecuteNonQuery();
-                // compute grade/status locally for message
                 var grade = ComputeGrade(nilai);
                 var status = ComputeStatus(nilai);
                 MessageBox.Show($"Inspeksi disimpan. Grade: {grade}, Status: {status}", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);

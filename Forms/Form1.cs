@@ -37,7 +37,11 @@ namespace WinFormsApp1
                     MessageBoxIcon.Information
                 );
 
-                FormDashboard dashboard = new FormDashboard(user.Role);
+                string roleUtama = (user.Roles != null && user.Roles.Count > 0)
+                                    ? user.Roles[0].NamaRole
+                                    : "pembeli";
+
+                FormDashboard dashboard = new FormDashboard(roleUtama);
                 dashboard.Show();
                 Hide();
             }
@@ -81,7 +85,7 @@ namespace WinFormsApp1
 
         private void btnregister_Click(object sender, EventArgs e)
         {
-            FormRegistercs registerForm = new FormRegistercs();
+            FormRegister registerForm = new FormRegister();
             registerForm.Show();
             Hide();
         }

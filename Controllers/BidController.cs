@@ -10,13 +10,13 @@ namespace WinFormsApp1.Controllers
     {
         public bool KirimBid(int idLelang, decimal nominalTawaran)
         {
-            if (!UserContext.IsLoggedIn)
+            if (!UserContext.IsLoggedIn())
             {
                 MessageBox.Show("Login dulu pls", "Akses Ditolak", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
-            if (!UserContext.IsPembeli)
+            if (!UserContext.IsPembeli())
             {
                 MessageBox.Show("Akun lu bukan Pembeli", "Akses Ditolak", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;

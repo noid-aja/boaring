@@ -11,13 +11,13 @@ namespace WinFormsApp1.Controllers
     {
         public bool KirimPengajuanProduk(string namaProduk, int idJenis, decimal beratKg, decimal hargaPengajuan, string? deskripsi)
         {
-            if (!UserContext.IsLoggedIn)
+            if (!UserContext.IsLoggedIn())
             {
                 MessageBox.Show("Login dulu pls.", "Akses Ditolak", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
-            if (!UserContext.IsPetani)
+            if (!UserContext.IsPetani())
             {
                 MessageBox.Show("Bukan petani.", "Akses Ditolak", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;

@@ -10,13 +10,13 @@ namespace WinFormsApp1.Controllers
     {
         public bool ProsesBukaLelang(int idProduk, string? lokasiLelang)
         {
-            if (!UserContext.IsLoggedIn)
+            if (!UserContext.IsLoggedIn())
             {
                 MessageBox.Show("Login dulu pls", "Akses Ditolak", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
-            if (!UserContext.IsAdmin)
+            if (!UserContext.IsAdmin())
             {
                 MessageBox.Show("Akses ditolak!.", "Bukan Admin", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
