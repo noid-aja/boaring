@@ -9,11 +9,11 @@ namespace WinFormsApp1.Controllers
 {
     public class UserController
     {
-        private readonly WinFormsApp1.Repositories.UserRepository _userRepository;
+        private readonly UserRepository _userRepository;
 
         public UserController()
         {
-            _userRepository = new WinFormsApp1.Repositories.UserRepository();
+            _userRepository = new UserRepository();
         }
 
         public User GetProfilSaya()
@@ -22,53 +22,6 @@ namespace WinFormsApp1.Controllers
                 throw new UnauthorizedAccessException("Belum login.");
 
             return UserContext.CurrentUser!;
-        }
-
-        public void RegisterMandiri(string namaLengkap, string username, string password, string? noTelp, string pilihanRole)
-        {
-            if (string.IsNullOrWhiteSpace(namaLengkap) || string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-                throw new ArgumentException("Data wajib tidak boleh kosong.");
-
-            string roleLower = pilihanRole.Trim().ToLower();
-            if (roleLower != "petani" && roleLower != "pembeli" && roleLower != "keduanya")
-                throw new ArgumentException("Pendaftaran mandiri hanya diperbolehkan untuk role Petani, Pembeli, atau Keduanya.");
-
-            List<string> rolesYangDidaftarkan = new List<string>();
-            if (roleLower == "petani" || roleLower == "keduanya") rolesYangDidaftarkan.Add("petani");
-            if (roleLower == "pembeli" || roleLower == "keduanya") rolesYangDidaftarkan.Add("pembeli");
-
-            // Build user model
-            var user = new User
-            {
-                NamaLengkap = namaLengkap.Trim(),
-                Username = username.Trim(),
-                Password = password,
-                NoTelp = noTelp?.Trim(),
-                IsAktif = true
-            };
-
-            try
-            {
-                _userRepository.Register(user, rolesYangDidaftarkan[0]);
-
-                if (rolesYangDidaftarkan.Count > 1)
-                {
-                    var created = _userRepository.Login(user.Username, user.Password);
-                    if (created == null)
-                        throw new Exception("Pendaftaran akun gagal dilakukan.");
-
-                    foreach (var role in rolesYangDidaftarkan.Skip(1))
-                    {
-                        bool added = _userRepository.AddRole(created.IdUser, role);
-                        if (!added)
-                            throw new Exception("Pendaftaran akun gagal dilakukan.");
-                    }
-                }
-            }
-            catch
-            {
-                throw new Exception("Pendaftaran akun gagal dilakukan.");
-            }
         }
 
         public void AdminDaftarkanInspektor(string namaLengkap, string username, string password, string? noTelp)
@@ -119,20 +72,6 @@ namespace WinFormsApp1.Controllers
             {
                 throw new Exception("Gagal menghapus/menonaktifkan akun.");
             }
-        }
-
-        public bool ProsesLogin(string username, string password)
-        {
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-                throw new ArgumentException("Username dan password tidak boleh kosong.");
-
-            User? user = _userRepository.Login(username.Trim(), password);
-            if (user != null)
-            {
-                UserContext.Login(user);
-                return true;
-            }
-            return false;
         }
 
         public void EditProfil(string namaLengkap, string? noTelp)

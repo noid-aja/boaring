@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace WinFormsApp1.Controllers
 {
@@ -8,79 +9,30 @@ namespace WinFormsApp1.Controllers
     {
         public static bool ApakahKosong(string input)
         {
-            if (string.IsNullOrEmpty(input))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return string.IsNullOrEmpty(input);
         }
 
         public static bool ApakahAngka(string input)
         {
-            if (!int.TryParse(input, out _))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return int.TryParse(input, out _);
         }
 
         public static bool ApakahPanjang(int min, string input, int? max = null)
         {
+            int panjangInput = input.Length;
             if (max == null)
             {
-                int panjangInput = input.Length;
-                if (panjangInput < min)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return panjangInput >= min;
             }
             else
             {
-                int panjangInput = input.Length;
-                if (panjangInput < min || panjangInput > max)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return panjangInput >= min && panjangInput <= max;
             }
         }
 
         public static bool ApakahHurufdanAngka(string input)
         {
-            if (input.All(ch => char.IsLetterOrDigit(ch)))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static bool ApakahEmailValid(string email)
-        {
-            try
-            {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == email;
-            }
-            catch
-            {
-                return false;
-            }
+            return input.All(ch => char.IsLetterOrDigit(ch));
         }
     }
 }

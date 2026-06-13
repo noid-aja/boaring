@@ -4,7 +4,9 @@ using WinFormsApp1.Helpers;
 
 namespace WinFormsApp1.Controllers
 {
-     private readonly UserRepository _userRepository;
+    public class AuthController
+    {
+        private readonly UserRepository _userRepository;
 
         public AuthController()
         {
