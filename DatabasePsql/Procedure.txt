@@ -1,0 +1,671 @@
+-- =========================================================
+-- 1. FUNCTIONS
+-- =========================================================
+
+-- Menentukan grade berdasarkan nilai QC.
+CREATE OR REPLACE FUNCTION kapten.fn_tentukan_grade(p_nilai INT)
+RETURNS VARCHAR(10)
+LANGUAGE plpgsql
+IMMUTABLE
+STRICT
+AS $$
+BEGIN
+    IF p_nilai < 0 OR p_nilai > 100 THEN
+        RAISE EXCEPTION 'Nilai inspeksi harus berada pada rentang 0 sampai 100.';
+    END IF;
+
+    RETURN CASE
+        WHEN p_nilai >= 85 THEN 'A'
+        WHEN p_nilai >= 80 THEN 'B'
+        WHEN p_nilai >= 60 THEN 'C'
+        ELSE 'D'
+    END;
+END;
+$$;
+
+-- Menentukan status QC berdasarkan nilai.
+CREATE OR REPLACE FUNCTION kapten.fn_tentukan_status_qc(p_nilai INT)
+RETURNS VARCHAR(30)
+LANGUAGE plpgsql
+IMMUTABLE
+STRICT
+AS $$
+BEGIN
+    IF p_nilai < 0 OR p_nilai > 100 THEN
+        RAISE EXCEPTION 'Nilai inspeksi harus berada pada rentang 0 sampai 100.';
+    END IF;
+
+    RETURN CASE
+        WHEN p_nilai >= 80 THEN 'lolos_qc'
+        ELSE 'ditolak_qc'
+    END;
+END;
+$$;
+
+-- Menghitung biaya komisi.
+CREATE OR REPLACE FUNCTION kapten.fn_hitung_biaya_komisi(
+    p_total_bayar NUMERIC,
+    p_persentase_komisi NUMERIC
+)
+RETURNS NUMERIC
+LANGUAGE plpgsql
+IMMUTABLE
+STRICT
+AS $$
+BEGIN
+    IF p_total_bayar < 0 THEN
+        RAISE EXCEPTION 'Total bayar tidak boleh negatif.';
+    END IF;
+
+    IF p_persentase_komisi < 0 OR p_persentase_komisi > 100 THEN
+        RAISE EXCEPTION 'Persentase komisi harus berada pada rentang 0 sampai 100.';
+    END IF;
+
+    RETURN ROUND(
+        p_total_bayar * p_persentase_komisi / 100,
+        2
+    );
+END;
+$$;
+
+-- Menghitung uang bersih yang diterima petani.
+CREATE OR REPLACE FUNCTION kapten.fn_hitung_total_diterima_petani(
+    p_total_bayar NUMERIC,
+    p_persentase_komisi NUMERIC
+)
+RETURNS NUMERIC
+LANGUAGE plpgsql
+IMMUTABLE
+STRICT
+AS $$
+BEGIN
+    RETURN ROUND(
+        p_total_bayar
+        - kapten.fn_hitung_biaya_komisi(
+            p_total_bayar,
+            p_persentase_komisi
+        ),
+        2
+    );
+END;
+$$;
+
+-- =========================================================
+-- 2. TRIGGER: INSPEKSI
+-- Grade dan status inspeksi dihitung otomatis dari nilai.
+-- =========================================================
+
+CREATE OR REPLACE FUNCTION kapten.trg_set_hasil_inspeksi()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    NEW.grade := kapten.fn_tentukan_grade(NEW.nilai);
+    NEW.status_inspeksi := kapten.fn_tentukan_status_qc(NEW.nilai);
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS before_inspeksi_set_hasil
+ON kapten.inspeksi;
+
+CREATE TRIGGER before_inspeksi_set_hasil
+BEFORE INSERT OR UPDATE OF nilai
+ON kapten.inspeksi
+FOR EACH ROW
+EXECUTE FUNCTION kapten.trg_set_hasil_inspeksi();
+
+-- Status produk mengikuti hasil inspeksi.
+CREATE OR REPLACE FUNCTION kapten.trg_sinkron_status_produk_qc()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE kapten.produk_kopi
+    SET status_produk = NEW.status_inspeksi
+    WHERE id_produk = NEW.id_produk;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION
+            'Produk dengan ID % tidak ditemukan.',
+            NEW.id_produk;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS after_inspeksi_sinkron_produk
+ON kapten.inspeksi;
+
+CREATE TRIGGER after_inspeksi_sinkron_produk
+AFTER INSERT OR UPDATE OF nilai, status_inspeksi
+ON kapten.inspeksi
+FOR EACH ROW
+EXECUTE FUNCTION kapten.trg_sinkron_status_produk_qc();
+
+-- =========================================================
+-- 3. TRIGGER: LELANG
+-- Hanya produk lolos QC yang boleh dijadwalkan.
+-- =========================================================
+
+CREATE OR REPLACE FUNCTION kapten.trg_validasi_produk_lelang()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_status_produk VARCHAR(30);
+BEGIN
+    SELECT status_produk
+    INTO v_status_produk
+    FROM kapten.produk_kopi
+    WHERE id_produk = NEW.id_produk;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION
+            'Produk dengan ID % tidak ditemukan.',
+            NEW.id_produk;
+    END IF;
+
+    IF v_status_produk <> 'lolos_qc' THEN
+        RAISE EXCEPTION
+            'Produk harus berstatus lolos_qc sebelum dijadwalkan. Status sekarang: %.',
+            v_status_produk;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS before_lelang_validasi_produk
+ON kapten.lelang;
+
+CREATE TRIGGER before_lelang_validasi_produk
+BEFORE INSERT OR UPDATE OF id_produk
+ON kapten.lelang
+FOR EACH ROW
+EXECUTE FUNCTION kapten.trg_validasi_produk_lelang();
+
+CREATE OR REPLACE FUNCTION kapten.trg_set_produk_dijadwalkan()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE kapten.produk_kopi
+    SET status_produk = 'dijadwalkan_lelang'
+    WHERE id_produk = NEW.id_produk;
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS after_lelang_set_produk
+ON kapten.lelang;
+
+CREATE TRIGGER after_lelang_set_produk
+AFTER INSERT
+ON kapten.lelang
+FOR EACH ROW
+EXECUTE FUNCTION kapten.trg_set_produk_dijadwalkan();
+
+-- =========================================================
+-- 4. TRIGGER: VALIDASI BID
+-- =========================================================
+
+CREATE OR REPLACE FUNCTION kapten.trg_validasi_bid()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_bid_minimum NUMERIC(12,2);
+    v_bid_tertinggi NUMERIC(12,2);
+    v_status_lelang VARCHAR(30);
+    v_id_petani INT;
+    v_pembeli_valid BOOLEAN;
+BEGIN
+    SELECT
+        l.bid_minimum,
+        l.status_lelang,
+        p.id_petani
+    INTO
+        v_bid_minimum,
+        v_status_lelang,
+        v_id_petani
+    FROM kapten.lelang l
+    JOIN kapten.produk_kopi p
+        ON p.id_produk = l.id_produk
+    WHERE l.id_lelang = NEW.id_lelang;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION
+            'Lelang dengan ID % tidak ditemukan.',
+            NEW.id_lelang;
+    END IF;
+
+    IF v_status_lelang <> 'berlangsung' THEN
+        RAISE EXCEPTION
+            'Bid hanya dapat dicatat ketika status lelang berlangsung.';
+    END IF;
+
+    SELECT EXISTS (
+        SELECT 1
+        FROM kapten.users u
+        JOIN kapten.user_roles ur
+            ON ur.id_user = u.id_user
+        JOIN kapten.roles r
+            ON r.id_role = ur.id_role
+        WHERE u.id_user = NEW.id_pembeli
+          AND u.is_aktif = TRUE
+          AND LOWER(r.nama_role) = 'pembeli'
+    )
+    INTO v_pembeli_valid;
+
+    IF NOT v_pembeli_valid THEN
+        RAISE EXCEPTION
+            'User dengan ID % bukan pembeli aktif.',
+            NEW.id_pembeli;
+    END IF;
+
+    IF NEW.id_pembeli = v_id_petani THEN
+        RAISE EXCEPTION
+            'Petani tidak boleh melakukan bid pada produk miliknya sendiri.';
+    END IF;
+
+    IF NEW.nominal < v_bid_minimum THEN
+        RAISE EXCEPTION
+            'Nominal bid % lebih kecil dari bid minimum %.',
+            NEW.nominal,
+            v_bid_minimum;
+    END IF;
+
+    SELECT MAX(nominal)
+    INTO v_bid_tertinggi
+    FROM kapten.bid
+    WHERE id_lelang = NEW.id_lelang
+      AND id_bid <> COALESCE(NEW.id_bid, -1);
+
+    IF v_bid_tertinggi IS NOT NULL
+       AND NEW.nominal <= v_bid_tertinggi THEN
+        RAISE EXCEPTION
+            'Nominal bid harus lebih besar dari bid tertinggi saat ini, yaitu %.',
+            v_bid_tertinggi;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS before_bid_validasi
+ON kapten.bid;
+
+CREATE TRIGGER before_bid_validasi
+BEFORE INSERT OR UPDATE OF id_lelang, id_pembeli, nominal
+ON kapten.bid
+FOR EACH ROW
+EXECUTE FUNCTION kapten.trg_validasi_bid();
+
+-- =========================================================
+-- 5. TRIGGER: PERHITUNGAN TRANSAKSI
+-- Nilai komisi dan penerimaan petani tidak dipercayakan ke aplikasi.
+-- =========================================================
+
+CREATE OR REPLACE FUNCTION kapten.trg_hitung_transaksi()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    NEW.biaya_komisi :=
+        kapten.fn_hitung_biaya_komisi(
+            NEW.total_bayar,
+            NEW.persentase_komisi
+        );
+
+    NEW.total_diterima_petani :=
+        kapten.fn_hitung_total_diterima_petani(
+            NEW.total_bayar,
+            NEW.persentase_komisi
+        );
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS before_transaksi_hitung
+ON kapten.transaksi;
+
+CREATE TRIGGER before_transaksi_hitung
+BEFORE INSERT OR UPDATE OF total_bayar, persentase_komisi
+ON kapten.transaksi
+FOR EACH ROW
+EXECUTE FUNCTION kapten.trg_hitung_transaksi();
+
+-- =========================================================
+-- 6. PROCEDURE: TETAPKAN PEMENANG
+-- Mengambil bid tertinggi, membuat pemenang dan transaksi,
+-- lalu menyelesaikan lelang serta menandai produk terjual.
+-- =========================================================
+
+CREATE OR REPLACE PROCEDURE kapten.sp_tetapkan_pemenang(
+    p_id_lelang INT,
+    p_persentase_komisi NUMERIC(5,2) DEFAULT 5.00
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_id_produk INT;
+    v_status_lelang VARCHAR(30);
+    v_id_bid INT;
+    v_nominal NUMERIC(12,2);
+    v_id_pemenang INT;
+BEGIN
+    IF p_persentase_komisi < 0
+       OR p_persentase_komisi > 100 THEN
+        RAISE EXCEPTION
+            'Persentase komisi harus berada pada rentang 0 sampai 100.';
+    END IF;
+
+    SELECT
+        id_produk,
+        status_lelang
+    INTO
+        v_id_produk,
+        v_status_lelang
+    FROM kapten.lelang
+    WHERE id_lelang = p_id_lelang
+    FOR UPDATE;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION
+            'Lelang dengan ID % tidak ditemukan.',
+            p_id_lelang;
+    END IF;
+
+    IF v_status_lelang NOT IN ('berlangsung', 'selesai') THEN
+        RAISE EXCEPTION
+            'Pemenang hanya dapat ditetapkan untuk lelang berlangsung atau selesai.';
+    END IF;
+
+    IF EXISTS (
+        SELECT 1
+        FROM kapten.pemenang_lelang
+        WHERE id_lelang = p_id_lelang
+    ) THEN
+        RAISE EXCEPTION
+            'Pemenang untuk lelang ID % sudah ditetapkan.',
+            p_id_lelang;
+    END IF;
+
+    SELECT
+        id_bid,
+        nominal
+    INTO
+        v_id_bid,
+        v_nominal
+    FROM kapten.bid
+    WHERE id_lelang = p_id_lelang
+    ORDER BY
+        nominal DESC,
+        tgl_bid ASC,
+        id_bid ASC
+    LIMIT 1;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION
+            'Lelang ID % belum memiliki bid.',
+            p_id_lelang;
+    END IF;
+
+    INSERT INTO kapten.pemenang_lelang (
+        id_lelang,
+        id_bid
+    )
+    VALUES (
+        p_id_lelang,
+        v_id_bid
+    )
+    RETURNING id_pemenang
+    INTO v_id_pemenang;
+
+    INSERT INTO kapten.transaksi (
+        id_pemenang,
+        total_bayar,
+        persentase_komisi,
+        status_bayar
+    )
+    VALUES (
+        v_id_pemenang,
+        v_nominal,
+        p_persentase_komisi,
+        'belum_bayar'
+    );
+
+    UPDATE kapten.lelang
+    SET status_lelang = 'selesai'
+    WHERE id_lelang = p_id_lelang;
+
+    UPDATE kapten.produk_kopi
+    SET status_produk = 'terjual'
+    WHERE id_produk = v_id_produk;
+END;
+$$;
+
+-- =========================================================
+-- 7. PROCEDURE: NONAKTIFKAN/AKTIFKAN AKUN
+-- Menonaktifkan atau aktifkan akun pengguna dengan memodifikasi kolom is_aktif.
+-- =========================================================
+CREATE OR REPLACE PROCEDURE kapten.sp_ubah_status_akun(
+    p_id_user INT,
+    p_status BOOLEAN
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM kapten.users
+        WHERE id_user = p_id_user
+    ) THEN
+        RAISE EXCEPTION 'User dengan ID % tidak ditemukan', p_id_user;
+    END IF;
+
+    UPDATE kapten.users
+    SET is_aktif = p_status
+    WHERE id_user = p_id_user;
+END;
+$$;
+
+CALL kapten.sp_ubah_status_akun(); -- user_id yg mw diubah dgn format user_id int dan is_aktif bool
+SELECT * FROM kapten.users
+
+-- =========================================================
+-- 8. VIEWS
+-- =========================================================
+
+-- Detail produk beserta petani, jenis, dan hasil QC.
+CREATE OR REPLACE VIEW kapten.vw_produk_detail AS
+SELECT
+    p.id_produk,
+    p.nama_produk,
+    p.berat_kg,
+    p.harga_pengajuan,
+    p.status_produk,
+    p.deskripsi,
+    u.id_user AS id_petani,
+    u.nama_lengkap AS nama_petani,
+    u.no_telp AS no_telp_petani,
+    jk.id_jenis,
+    jk.nama_jenis,
+    i.id_inspeksi,
+    i.tgl_inspeksi,
+    i.nilai,
+    i.grade,
+    i.harga_rekomendasi,
+    i.status_inspeksi,
+    i.catatan
+FROM kapten.produk_kopi p
+JOIN kapten.users u
+    ON u.id_user = p.id_petani
+JOIN kapten.jenis_kopi jk
+    ON jk.id_jenis = p.id_jenis
+LEFT JOIN kapten.inspeksi i
+    ON i.id_produk = p.id_produk;
+
+-- Bid tertinggi untuk setiap lelang.
+CREATE OR REPLACE VIEW kapten.vw_bid_tertinggi AS
+SELECT
+    ranked.id_lelang,
+    ranked.id_bid,
+    ranked.id_pembeli,
+    ranked.nama_pembeli,
+    ranked.nominal,
+    ranked.tgl_bid
+FROM (
+    SELECT
+        b.id_lelang,
+        b.id_bid,
+        b.id_pembeli,
+        u.nama_lengkap AS nama_pembeli,
+        b.nominal,
+        b.tgl_bid,
+        ROW_NUMBER() OVER (
+            PARTITION BY b.id_lelang
+            ORDER BY
+                b.nominal DESC,
+                b.tgl_bid ASC,
+                b.id_bid ASC
+        ) AS urutan
+    FROM kapten.bid b
+    JOIN kapten.users u
+        ON u.id_user = b.id_pembeli
+) AS ranked
+WHERE ranked.urutan = 1;
+
+-- Ringkasan hasil lelang dan transaksi.
+CREATE OR REPLACE VIEW kapten.vw_hasil_lelang AS
+SELECT
+    l.id_lelang,
+    l.status_lelang,
+    l.tgl_mulai,
+    l.tgl_akhir,
+    l.lokasi_lelang,
+    p.id_produk,
+    p.nama_produk,
+    petani.id_user AS id_petani,
+    petani.nama_lengkap AS nama_petani,
+    pl.id_pemenang,
+    b.id_bid AS id_bid_pemenang,
+    pembeli.id_user AS id_pembeli,
+    pembeli.nama_lengkap AS nama_pembeli,
+    b.nominal AS nominal_pemenang,
+    t.id_transaksi,
+    t.total_bayar,
+    t.persentase_komisi,
+    t.biaya_komisi,
+    t.total_diterima_petani,
+    t.status_bayar,
+    t.tgl_transaksi
+FROM kapten.lelang l
+JOIN kapten.produk_kopi p
+    ON p.id_produk = l.id_produk
+JOIN kapten.users petani
+    ON petani.id_user = p.id_petani
+LEFT JOIN kapten.pemenang_lelang pl
+    ON pl.id_lelang = l.id_lelang
+LEFT JOIN kapten.bid b
+    ON b.id_bid = pl.id_bid
+LEFT JOIN kapten.users pembeli
+    ON pembeli.id_user = b.id_pembeli
+LEFT JOIN kapten.transaksi t
+    ON t.id_pemenang = pl.id_pemenang;
+
+-- Ringkasan jumlah produk per status dan jenis kopi.
+CREATE OR REPLACE VIEW kapten.vw_laporan_produk AS
+SELECT
+    jk.nama_jenis,
+    p.status_produk,
+    COUNT(*) AS jumlah_produk,
+    SUM(p.berat_kg) AS total_berat_kg,
+    SUM(p.harga_pengajuan) AS total_harga_pengajuan
+FROM kapten.produk_kopi p
+JOIN kapten.jenis_kopi jk
+    ON jk.id_jenis = p.id_jenis
+GROUP BY
+    jk.nama_jenis,
+    p.status_produk;
+
+-- =========================================================
+-- 9. CONTOH PENGUJIAN
+-- Jalankan satu per satu, jangan langsung semuanya.
+-- =========================================================
+
+-- Uji function:
+-- SELECT kapten.fn_tentukan_grade(88);
+-- SELECT kapten.fn_tentukan_status_qc(88);
+-- SELECT kapten.fn_hitung_biaya_komisi(2000000, 5);
+-- SELECT kapten.fn_hitung_total_diterima_petani(2000000, 5);
+
+-- Uji inspeksi; grade/status otomatis, produk ikut berubah:
+-- INSERT INTO kapten.inspeksi (
+--     id_produk,
+--     id_inspektor,
+--     nilai,
+--     grade,
+--     harga_rekomendasi,
+--     catatan,
+--     status_inspeksi
+-- )
+-- VALUES (
+--     1,
+--     6,
+--     88,
+--     'D',
+--     1300000,
+--     'Aroma dan tingkat kematangan baik.',
+--     'ditolak_qc'
+-- );
+--
+-- Walaupun grade/status diisi salah pada INSERT,
+-- BEFORE trigger menggantinya menjadi A dan lolos_qc.
+
+-- Uji pembuatan lelang setelah produk lolos QC:
+-- INSERT INTO kapten.lelang (
+--     id_produk,
+--     bid_minimum,
+--     tgl_mulai,
+--     tgl_akhir,
+--     lokasi_lelang,
+--     status_lelang
+-- )
+-- VALUES (
+--     1,
+--     1300000,
+--     CURRENT_TIMESTAMP,
+--     CURRENT_TIMESTAMP + INTERVAL '2 hours',
+--     'Gedung Lelang KAPTEN',
+--     'berlangsung'
+-- );
+
+-- Uji bid:
+-- INSERT INTO kapten.bid (id_lelang, id_pembeli, nominal)
+-- VALUES (1, 4, 1400000);
+--
+-- INSERT INTO kapten.bid (id_lelang, id_pembeli, nominal)
+-- VALUES (1, 5, 1500000);
+
+-- Uji procedure:
+-- CALL kapten.sp_tetapkan_pemenang(1, 5.00);
+
+-- Uji view:
+-- SELECT * FROM kapten.vw_produk_detail;
+-- SELECT * FROM kapten.vw_bid_tertinggi;
+-- SELECT * FROM kapten.vw_hasil_lelang;
+-- SELECT * FROM kapten.vw_laporan_produk;
+
+-- Uji hasil:
+-- SELECT * FROM kapten.inspeksi;
+-- SELECT * FROM kapten.produk_kopi;
+-- SELECT * FROM kapten.lelang;
+-- SELECT * FROM kapten.bid;
+-- SELECT * FROM kapten.pemenang_lelang;
+-- SELECT * FROM kapten.transaksi;

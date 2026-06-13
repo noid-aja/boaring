@@ -29,4 +29,10 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DatabasePsql\" />
+    <Folder Include="Forms\PembeliForm\" />
+    <Folder Include="Forms\PetaniForm\" />
+  </ItemGroup>
+
 </Project>

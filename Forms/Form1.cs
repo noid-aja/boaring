@@ -5,6 +5,7 @@ using WinFormsApp1.Controllers;
 using WinFormsApp1.Forms;
 using WinFormsApp1.Helpers;
 using WinFormsApp1.Models;
+using WinFormsApp1.Forms.AdminForm;
 
 namespace WinFormsApp1
 {
@@ -36,8 +37,8 @@ namespace WinFormsApp1
                     MessageBoxIcon.Information
                 );
 
-                Formmenu menu = new Formmenu();
-                menu.Show();
+                FormDashboard dashboard = new FormDashboard(user.Role);
+                dashboard.Show();
                 Hide();
             }
             catch (ArgumentException ex)
@@ -103,6 +104,13 @@ namespace WinFormsApp1
 
         private void label2_Click(object sender, EventArgs e)
         {
+        }
+
+        private void linkregister_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            FormRegister registerForm = new FormRegister();
+            registerForm.Show();
+            Hide();
         }
     }
 }
