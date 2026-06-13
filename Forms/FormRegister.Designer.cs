@@ -13,175 +13,142 @@
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormRegister));
             txtnamapanjang = new TextBox();
-            label1 = new Label();
-            label2 = new Label();
             txtpassword = new TextBox();
-            label3 = new Label();
             txtcpassword = new TextBox();
             Register = new Button();
-            label4 = new Label();
             txtnotelp = new TextBox();
-            label5 = new Label();
             txtrole = new ComboBox();
-            label6 = new Label();
-            label7 = new Label();
             txtusername = new TextBox();
+            btnback = new Button();
             SuspendLayout();
             // 
             // txtnamapanjang
             // 
-            txtnamapanjang.Location = new Point(415, 192);
+            txtnamapanjang.BackColor = Color.FromArgb(17, 37, 0);
+            txtnamapanjang.BorderStyle = BorderStyle.None;
+            txtnamapanjang.ForeColor = Color.WhiteSmoke;
+            txtnamapanjang.Location = new Point(178, 141);
+            txtnamapanjang.Margin = new Padding(2);
             txtnamapanjang.Name = "txtnamapanjang";
-            txtnamapanjang.Size = new Size(339, 39);
+            txtnamapanjang.PlaceholderText = "Masukan Nama";
+            txtnamapanjang.Size = new Size(198, 20);
             txtnamapanjang.TabIndex = 0;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(415, 143);
-            label1.Name = "label1";
-            label1.Size = new Size(168, 32);
-            label1.TabIndex = 3;
-            label1.Text = "Nama Panjang";
-            label1.Click += label1_Click;
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new Point(415, 631);
-            label2.Name = "label2";
-            label2.Size = new Size(113, 32);
-            label2.TabIndex = 5;
-            label2.Text = "password";
             // 
             // txtpassword
             // 
-            txtpassword.Location = new Point(415, 679);
+            txtpassword.BackColor = Color.FromArgb(17, 37, 0);
+            txtpassword.BorderStyle = BorderStyle.None;
+            txtpassword.ForeColor = Color.WhiteSmoke;
+            txtpassword.Location = new Point(426, 208);
+            txtpassword.Margin = new Padding(2);
             txtpassword.Name = "txtpassword";
-            txtpassword.PasswordChar = '*';
-            txtpassword.Size = new Size(339, 39);
+            txtpassword.PlaceholderText = "Masukan Password";
+            txtpassword.Size = new Size(200, 20);
             txtpassword.TabIndex = 4;
             txtpassword.UseSystemPasswordChar = true;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(415, 748);
-            label3.Name = "label3";
-            label3.Size = new Size(202, 32);
-            label3.TabIndex = 7;
-            label3.Text = "confirm password";
+            txtpassword.TextChanged += txtpassword_TextChanged;
             // 
             // txtcpassword
             // 
-            txtcpassword.Location = new Point(415, 799);
+            txtcpassword.BackColor = Color.FromArgb(17, 37, 0);
+            txtcpassword.BorderStyle = BorderStyle.None;
+            txtcpassword.ForeColor = Color.WhiteSmoke;
+            txtcpassword.Location = new Point(426, 274);
+            txtcpassword.Margin = new Padding(2);
             txtcpassword.Name = "txtcpassword";
-            txtcpassword.PasswordChar = '*';
-            txtcpassword.Size = new Size(339, 39);
+            txtcpassword.PlaceholderText = "Ulangi Password";
+            txtcpassword.Size = new Size(200, 20);
             txtcpassword.TabIndex = 6;
             txtcpassword.UseSystemPasswordChar = true;
             // 
             // Register
             // 
-            Register.BackColor = Color.Lime;
-            Register.Location = new Point(498, 1020);
+            Register.BackColor = Color.Transparent;
+            Register.FlatAppearance.BorderSize = 0;
+            Register.FlatAppearance.MouseDownBackColor = Color.Transparent;
+            Register.FlatAppearance.MouseOverBackColor = Color.Transparent;
+            Register.FlatStyle = FlatStyle.Flat;
+            Register.Location = new Point(273, 331);
+            Register.Margin = new Padding(2);
             Register.Name = "Register";
-            Register.Size = new Size(150, 46);
+            Register.Size = new Size(254, 40);
             Register.TabIndex = 8;
-            Register.Text = "register";
             Register.UseVisualStyleBackColor = false;
             Register.Click += Register_Click;
             // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.BackColor = Color.Transparent;
-            label4.Font = new Font("Segoe UI Black", 18F, FontStyle.Bold | FontStyle.Italic);
-            label4.ForeColor = Color.DarkViolet;
-            label4.Location = new Point(331, 43);
-            label4.Name = "label4";
-            label4.Size = new Size(522, 65);
-            label4.TabIndex = 9;
-            label4.Text = "Register Petani Form";
-            label4.Click += label4_Click;
-            // 
             // txtnotelp
             // 
-            txtnotelp.Location = new Point(415, 436);
+            txtnotelp.BackColor = Color.FromArgb(17, 37, 0);
+            txtnotelp.BorderStyle = BorderStyle.None;
+            txtnotelp.ForeColor = Color.WhiteSmoke;
+            txtnotelp.Location = new Point(178, 273);
+            txtnotelp.Margin = new Padding(2);
             txtnotelp.Name = "txtnotelp";
-            txtnotelp.Size = new Size(339, 39);
+            txtnotelp.PlaceholderText = "Masukan No.Telp";
+            txtnotelp.Size = new Size(198, 20);
             txtnotelp.TabIndex = 12;
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Location = new Point(415, 388);
-            label5.Name = "label5";
-            label5.Size = new Size(168, 32);
-            label5.TabIndex = 13;
-            label5.Text = "Nomor Telpon";
             // 
             // txtrole
             // 
             txtrole.AllowDrop = true;
-            txtrole.DropDownStyle = ComboBoxStyle.DropDownList;
+            txtrole.BackColor = Color.FromArgb(17, 37, 0);
+            txtrole.FlatStyle = FlatStyle.Flat;
+            txtrole.ForeColor = SystemColors.WindowFrame;
             txtrole.FormattingEnabled = true;
             txtrole.Items.AddRange(new object[] { "Petani", "Pembeli" });
-            txtrole.Location = new Point(415, 552);
+            txtrole.Location = new Point(424, 141);
+            txtrole.Margin = new Padding(2);
             txtrole.MaxDropDownItems = 2;
             txtrole.Name = "txtrole";
-            txtrole.Size = new Size(339, 40);
+            txtrole.Size = new Size(200, 28);
             txtrole.TabIndex = 14;
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Location = new Point(415, 506);
-            label6.Name = "label6";
-            label6.Size = new Size(60, 32);
-            label6.TabIndex = 15;
-            label6.Text = "Role";
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(415, 264);
-            label7.Name = "label7";
-            label7.Size = new Size(119, 32);
-            label7.TabIndex = 17;
-            label7.Text = "username";
+            txtrole.Tag = "";
+            txtrole.Text = "Pilih Role";
+            txtrole.SelectedIndexChanged += txtrole_SelectedIndexChanged;
             // 
             // txtusername
             // 
-            txtusername.Location = new Point(415, 313);
+            txtusername.BackColor = Color.FromArgb(17, 37, 0);
+            txtusername.BorderStyle = BorderStyle.None;
+            txtusername.ForeColor = Color.WhiteSmoke;
+            txtusername.Location = new Point(178, 207);
+            txtusername.Margin = new Padding(2);
             txtusername.Name = "txtusername";
-            txtusername.Size = new Size(339, 39);
+            txtusername.PlaceholderText = "Masukan Username";
+            txtusername.Size = new Size(198, 20);
             txtusername.TabIndex = 16;
+            // 
+            // btnback
+            // 
+            btnback.BackColor = Color.Transparent;
+            btnback.FlatAppearance.BorderSize = 0;
+            btnback.FlatAppearance.MouseDownBackColor = Color.Transparent;
+            btnback.FlatAppearance.MouseOverBackColor = Color.Transparent;
+            btnback.FlatStyle = FlatStyle.Flat;
+            btnback.Location = new Point(154, 69);
+            btnback.Name = "btnback";
+            btnback.Size = new Size(72, 25);
+            btnback.TabIndex = 17;
+            btnback.UseVisualStyleBackColor = false;
+            btnback.Click += button1_Click;
             // 
             // FormRegister
             // 
-            AutoScaleDimensions = new SizeF(13F, 32F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
-            BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(1176, 1146);
+            BackgroundImage = Properties.Resources.register__1_;
+            ClientSize = new Size(799, 450);
+            Controls.Add(btnback);
             Controls.Add(txtrole);
-            Controls.Add(label7);
             Controls.Add(txtusername);
-            Controls.Add(label6);
-            Controls.Add(label5);
             Controls.Add(txtnotelp);
-            Controls.Add(label4);
             Controls.Add(Register);
-            Controls.Add(label3);
             Controls.Add(txtcpassword);
-            Controls.Add(label2);
             Controls.Add(txtpassword);
-            Controls.Add(label1);
             Controls.Add(txtnamapanjang);
             DoubleBuffered = true;
+            Margin = new Padding(2);
             Name = "FormRegister";
             Text = "Register";
             ResumeLayout(false);
@@ -189,18 +156,12 @@
         }
 
         private System.Windows.Forms.TextBox txtnamapanjang;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtpassword;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtcpassword;
         private System.Windows.Forms.Button Register;
-        private System.Windows.Forms.Label label4;
         private TextBox txtnotelp;
-        private Label label5;
         private ComboBox txtrole;
-        private Label label6;
-        private Label label7;
         private TextBox txtusername;
+        private Button btnback;
     }
 }

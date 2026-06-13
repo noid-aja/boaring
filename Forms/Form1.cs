@@ -104,5 +104,12 @@ namespace WinFormsApp1
         private void label2_Click(object sender, EventArgs e)
         {
         }
+
+        private void linkregister_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            FormRegister registerForm = new FormRegister();
+            registerForm.Show();
+            Hide();
+        }
     }
 }

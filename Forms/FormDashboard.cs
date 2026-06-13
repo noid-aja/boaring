@@ -61,7 +61,6 @@ namespace WinFormsApp1.Forms.AdminForm
             if (role == "admin")
             {
                 lblSidebarTitle.Text = "Dashboard Admin";
-                lblHeaderTitle.Text = "Dashboard Admin";
 
                 AturMenu(new List<string>
                 {
@@ -86,7 +85,6 @@ namespace WinFormsApp1.Forms.AdminForm
             else if (role == "petani")
             {
                 lblSidebarTitle.Text = "Dashboard Petani";
-                lblHeaderTitle.Text = "Dashboard Petani";
 
                 AturMenu(new List<string>
                 {
@@ -112,7 +110,6 @@ namespace WinFormsApp1.Forms.AdminForm
             else if (role == "pembeli")
             {
                 lblSidebarTitle.Text = "Dashboard Pembeli";
-                lblHeaderTitle.Text = "Dashboard Pembeli";
 
                 AturMenu(new List<string>
                 {
@@ -137,7 +134,6 @@ namespace WinFormsApp1.Forms.AdminForm
             else if (role == "inspektor")
             {
                 lblSidebarTitle.Text = "Dashboard Inspektor";
-                lblHeaderTitle.Text = "Dashboard Inspektor";
 
                 AturMenu(new List<string>
                 {
@@ -195,7 +191,7 @@ namespace WinFormsApp1.Forms.AdminForm
             {
                 btnMenu1,
                 btnMenu2,
-                btnMenu3,
+                btnMenujeniskopi,
                 btnMenu4,
                 btnMenu5,
                 btnMenu6,
@@ -225,9 +221,29 @@ namespace WinFormsApp1.Forms.AdminForm
             if (sender is not Button btn || btn.Tag == null)
                 return;
 
-            string menu = btn.Tag.ToString() ?? string.Empty;
+            string menu = (btn.Tag.ToString() ?? string.Empty).Trim().ToLower();
 
-            MessageBox.Show("Menu dipilih: " + menu);
+            switch (menu)
+            {
+                case "beranda":
+                    // close any active child and show dashboard components
+                    if (activeForm != null)
+                    {
+                        activeForm.Close();
+                        activeForm = null;
+                    }
+                    ShowDashboardComponents();
+                    break;
+                case "kelola user":
+                    openChildForm(new KelolaUser());
+                    break;
+                case "jenis kopi":
+                    openChildForm(new jeniskopi());
+                    break;
+                default:
+                    MessageBox.Show("Menu dipilih: " + btn.Tag.ToString());
+                    break;
+            }
         }
 
         private void SetTable(DataTable table)
@@ -303,6 +319,120 @@ namespace WinFormsApp1.Forms.AdminForm
 
                 this.Close();
             }
+        }
+
+        private void panel8_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panel3_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panel4_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void lblSidebarTitle_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnLogout_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnMenu3_Click(object sender, EventArgs e)
+        {
+            openChildForm(new jeniskopi());
+
+        }
+
+        private Form activeForm = null;
+        private void openChildForm(Form child)
+        {
+            // hide dashboard components before showing child
+            HideDashboardComponents();
+
+            if (activeForm != null)
+                activeForm.Close();
+
+            activeForm = child;
+            child.TopLevel = false;
+            child.FormBorderStyle = FormBorderStyle.None;
+            child.Dock = DockStyle.Fill;
+            panel1.Controls.Add(child);
+            panel1.Tag = child;
+            // do not auto-restore dashboard when a child is closed due to switching.
+            // restoring is performed explicitly when user returns to dashboard (e.g. Beranda).
+
+            child.BringToFront();
+            child.Show();
+        }
+
+        private void HideDashboardComponents()
+        {
+            try
+            {
+                panel4.Visible = false;
+                panel5.Visible = false;
+                panel6.Visible = false;
+                panel7.Visible = false;
+                panel8.Visible = false;
+                lblTableTitle.Visible = false;
+            }
+            catch { }
+        }
+
+        private void ShowDashboardComponents()
+        {
+            try
+            {
+                panel4.Visible = true;
+                panel5.Visible = true;
+                panel6.Visible = true;
+                panel7.Visible = true;
+                panel8.Visible = true;
+                lblTableTitle.Visible = true;
+            }
+            catch { }
+        }
+
+        private void btnOpenChildSmart_Click(object sender, EventArgs e)
+        {
+        }
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panel5_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panel6_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void btnMenu2_Click(object sender, EventArgs e)
+        {
+            openChildForm(new KelolaUser());
+        }
+
+        private void lblCardValue1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dgvDashboard_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }
