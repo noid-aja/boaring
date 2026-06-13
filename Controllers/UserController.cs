@@ -4,6 +4,7 @@ using System.Linq;
 using WinFormsApp1.Helpers;
 using WinFormsApp1.Models;
 using WinFormsApp1.Repositories;
+using WinFormsApp1.Repositories.UserRepository;
 
 namespace WinFormsApp1.Controllers
 {
