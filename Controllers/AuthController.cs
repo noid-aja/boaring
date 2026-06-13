@@ -4,9 +4,7 @@ using WinFormsApp1.Helpers;
 
 namespace WinFormsApp1.Controllers
 {
-    public class AuthController
-    {
-        private readonly UserRepository _userRepository;
+     private readonly UserRepository _userRepository;
 
         public AuthController()
         {
@@ -21,6 +19,7 @@ namespace WinFormsApp1.Controllers
             string noTelp,
             string role)
         {   
+
             if (string.IsNullOrWhiteSpace(namaLengkap))
             {
                 throw new ArgumentException(
