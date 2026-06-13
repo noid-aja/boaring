@@ -191,7 +191,7 @@ namespace WinFormsApp1.Forms.AdminForm
             {
                 btnMenu1,
                 btnMenu2,
-                btnMenujeniskopi,
+                btnMenu3,
                 btnMenu4,
                 btnMenu5,
                 btnMenu6,
@@ -348,7 +348,27 @@ namespace WinFormsApp1.Forms.AdminForm
 
         private void btnMenu3_Click(object sender, EventArgs e)
         {
-            openChildForm(new jeniskopi());
+            // menu 3: for admin show Jenis Kopi, for inspektor open Inspeksi form
+            try
+            {
+                if (string.Equals(roleAktif, "admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    openChildForm(new jeniskopi());
+                }
+                else if (string.Equals(roleAktif, "inspektor", StringComparison.OrdinalIgnoreCase))
+                {
+                    openChildForm(new Inspeksi());
+                }
+                else
+                {
+                    // fallback: open jeniskopi
+                    openChildForm(new jeniskopi());
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Gagal membuka form: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
         }
 

@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <Folder Include="DatabasePsql\" />
-    <Folder Include="Forms\InspektorForm\" />
     <Folder Include="Forms\PembeliForm\" />
     <Folder Include="Forms\PetaniForm\" />
   </ItemGroup>

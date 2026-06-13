@@ -46,7 +46,7 @@
             panel8 = new Panel();
             btnMenu1 = new Button();
             btnMenu2 = new Button();
-            btnMenujeniskopi = new Button();
+            btnMenu3 = new Button();
             btnMenu4 = new Button();
             btnMenu5 = new Button();
             btnLogout = new Button();
@@ -291,19 +291,19 @@
             btnMenu2.UseVisualStyleBackColor = false;
             btnMenu2.Click += btnMenu2_Click;
             // 
-            // btnMenujeniskopi
+            // btnMenu3
             // 
-            btnMenujeniskopi.BackColor = Color.DarkGreen;
-            btnMenujeniskopi.Font = new Font("Segoe UI Black", 10.125F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnMenujeniskopi.ForeColor = Color.White;
-            btnMenujeniskopi.Location = new Point(31, 328);
-            btnMenujeniskopi.Margin = new Padding(2);
-            btnMenujeniskopi.Name = "btnMenujeniskopi";
-            btnMenujeniskopi.Size = new Size(194, 42);
-            btnMenujeniskopi.TabIndex = 5;
-            btnMenujeniskopi.Text = "Jenis Kopi";
-            btnMenujeniskopi.UseVisualStyleBackColor = false;
-            btnMenujeniskopi.Click += btnMenu3_Click;
+            btnMenu3.BackColor = Color.DarkGreen;
+            btnMenu3.Font = new Font("Segoe UI Black", 10.125F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnMenu3.ForeColor = Color.White;
+            btnMenu3.Location = new Point(31, 328);
+            btnMenu3.Margin = new Padding(2);
+            btnMenu3.Name = "btnMenu3";
+            btnMenu3.Size = new Size(194, 42);
+            btnMenu3.TabIndex = 5;
+            btnMenu3.Text = "Jenis Kopi";
+            btnMenu3.UseVisualStyleBackColor = false;
+            btnMenu3.Click += btnMenu3_Click;
             // 
             // btnMenu4
             // 
@@ -382,7 +382,7 @@
             panel2.Controls.Add(btnLogout);
             panel2.Controls.Add(btnMenu5);
             panel2.Controls.Add(btnMenu4);
-            panel2.Controls.Add(btnMenujeniskopi);
+            panel2.Controls.Add(btnMenu3);
             panel2.Controls.Add(btnMenu2);
             panel2.Controls.Add(btnMenu1);
             panel2.Dock = DockStyle.Left;
@@ -464,7 +464,7 @@
         private Panel panel8;
         private Button btnMenu1;
         private Button btnMenu2;
-        private Button btnMenujeniskopi;
+        private Button btnMenu3;
         private Button btnMenu4;
         private Button btnMenu5;
         private Button btnLogout;
