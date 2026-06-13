@@ -43,27 +43,25 @@
             chart1.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             chart1.Legends.Add(legend1);
-            chart1.Location = new Point(-35, 333);
-            chart1.Margin = new Padding(6);
+            chart1.Location = new Point(76, 29);
             chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             chart1.Series.Add(series1);
-            chart1.Size = new Size(1086, 612);
+            chart1.Size = new Size(585, 287);
             chart1.TabIndex = 0;
             chart1.Text = "chart1";
             chart1.Click += chart1_Click;
             // 
             // Form3
             // 
-            AutoScaleDimensions = new SizeF(13F, 32F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(1486, 960);
+            ClientSize = new Size(738, 351);
             Controls.Add(chart1);
-            Margin = new Padding(6);
             Name = "Form3";
             Text = "Form3";
             Load += Form3_Load;

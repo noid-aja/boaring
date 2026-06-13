@@ -93,7 +93,7 @@ namespace WinFormsApp1.Models
                         cmdUpdateLelang.Parameters.AddWithValue("id", lelang.IdLelang);
                         cmdUpdateLelang.ExecuteNonQuery();
 
-                        using var cmdUpdateProduk = new NpgsqlCommand("update kapten.produk_kopi set status = 'LolosQc' where id_produk = @id", conn);
+                        using var cmdUpdateProduk = new NpgsqlCommand("update kapten.produk_kopi set status = 'Dibatalkan' where id_produk = @id", conn);
                         cmdUpdateProduk.Parameters.AddWithValue("id", lelang.IdProduk);
                         cmdUpdateProduk.ExecuteNonQuery();
                     }
@@ -160,7 +160,7 @@ namespace WinFormsApp1.Models
                 cmdGetProduk.Parameters.AddWithValue("id", idTransaksi);
                 int idProduk = Convert.ToInt32(cmdGetProduk.ExecuteScalar());
 
-                using var cmdProd = new NpgsqlCommand("UPDATE kapten.produk_kopi SET status = 'LolosQc' WHERE id_produk = @id", conn);
+                using var cmdProd = new NpgsqlCommand("update kapten.produk_kopi set status = 'Dibatalkan' where id_produk = @id", conn);
                 cmdProd.Parameters.AddWithValue("id", idProduk);
                 cmdProd.ExecuteNonQuery();
 

@@ -2,6 +2,7 @@ using Npgsql;
 using System;
 using System.Windows.Forms;
 using WinFormsApp1.Controllers;
+using WinFormsApp1.Forms;
 using WinFormsApp1.Helpers;
 using WinFormsApp1.Models;
 
@@ -79,7 +80,7 @@ namespace WinFormsApp1
 
         private void btnregister_Click(object sender, EventArgs e)
         {
-            FormRegister registerForm = new FormRegister();
+            FormRegistercs registerForm = new FormRegistercs();
             registerForm.Show();
             Hide();
         }

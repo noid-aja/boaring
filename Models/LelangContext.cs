@@ -20,7 +20,7 @@ namespace WinFormsApp1.Models
                     select p.id_produk, p.id_petani, p.id_jenis, p.nama_produk, p.berat_kg, p.harga_pengajuan, p.deskripsi, p.status 
                     from kapten.produk_kopi p
                     where p.status = 'LolosQc'
-                    order by p.id_produk ASC", conn);
+                    order by p.id_produk asc", conn);
 
                 using var reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -53,10 +53,27 @@ namespace WinFormsApp1.Models
             using var trans = conn.BeginTransaction();
             try
             {
+                using var cmdCekStatus = new NpgsqlCommand(@"
+            select status from kapten.produk_kopi 
+            where id_produk = @idProduk", conn, trans);
+                cmdCekStatus.Parameters.AddWithValue("idProduk", idProduk);
+
+                object? statusRes = cmdCekStatus.ExecuteScalar();
+                if (statusRes == null)
+                {
+                    throw new Exception("Produk tidak ditemukan di database!");
+                }
+
+                string statusProduk = statusRes.ToString() ?? string.Empty;
+                if (statusProduk != "LolosQc")
+                {
+                    throw new Exception($"Produk tidak bisa dilelang! Status saat ini adalah '{statusProduk}'");
+                }
+
                 using var cmdGetHarga = new NpgsqlCommand(@"
                     select harga_rekomendasi from kapten.inspeksi 
                     where id_produk = @idProduk 
-                    ordere by id_inspeksi desc limit 1", conn);
+                    order by id_inspeksi desc limit 1", conn);
                 cmdGetHarga.Parameters.AddWithValue("idProduk", idProduk);
 
                 object res = cmdGetHarga.ExecuteScalar();
@@ -66,7 +83,7 @@ namespace WinFormsApp1.Models
                 decimal bidMinimum = Convert.ToDecimal(res);
 
                 DateTime tglMulai = DateTime.Now;
-                DateTime tglAkhir = tglMulai.AddMinutes(10);
+                DateTime tglAkhir = tglMulai.AddMinutes(3);
 
                 using var cmdLelang = new NpgsqlCommand(@"
                     insert into kapten.lelang (id_produk, bid_minimum, tgl_mulai, tgl_akhir, lokasi_lelang, status) 

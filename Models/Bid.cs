@@ -22,5 +22,7 @@ namespace WinFormsApp1.Models
             Nominal = nominal;
             TglBid = tglBid;
         }
+
+
     }
 }

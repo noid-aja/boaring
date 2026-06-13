@@ -30,7 +30,7 @@ namespace WinFormsApp1.Models
                 cmdInspeksi.Parameters.AddWithValue("isLolos", isLolos);
                 cmdInspeksi.ExecuteNonQuery();
 
-                string statusBaru = isLolos ? "Lolos Quality Control!" : "Ditolak Quality Control";
+                string statusBaru = isLolos ? "LolosQc" : "DitolakQc";
 
                 using var cmdProduk = new NpgsqlCommand(@"
                     update kapten.produk_kopi 

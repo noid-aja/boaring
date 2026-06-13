@@ -55,19 +55,19 @@ namespace WinFormsApp1.Controllers
                 {
                     var created = _userRepository.Login(user.Username, user.Password);
                     if (created == null)
-                        throw new Exception("Pendaftaran akun mandiri gagal dilakukan.");
+                        throw new Exception("Pendaftaran akun gagal dilakukan.");
 
                     foreach (var role in rolesYangDidaftarkan.Skip(1))
                     {
                         bool added = _userRepository.AddRole(created.IdUser, role);
                         if (!added)
-                            throw new Exception("Pendaftaran akun mandiri gagal dilakukan.");
+                            throw new Exception("Pendaftaran akun gagal dilakukan.");
                     }
                 }
             }
             catch
             {
-                throw new Exception("Pendaftaran akun mandiri gagal dilakukan.");
+                throw new Exception("Pendaftaran akun gagal dilakukan.");
             }
         }
 

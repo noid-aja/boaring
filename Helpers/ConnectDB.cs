@@ -8,8 +8,8 @@ namespace WinFormsApp1.Helpers
             "Host=localhost;" +
             "Port=5432;" +
             "Username=postgres;" +
-            "Password=postgres8888;" +
-            "Database=Kapten;";
+            "Password=NOIDAJA;" +
+            "Database=prototype;";
 
         public static NpgsqlConnection GetConnection()
         {

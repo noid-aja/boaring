@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
 using WinFormsApp1.Models;
@@ -32,5 +33,6 @@ namespace WinFormsApp1.Helpers
 
         public static List<string> GetRoleNames()
                    => CurrentUser?.Roles.Select(r => r.NamaRole).ToList() ?? new List<string>();
+
     }
 }

@@ -2,6 +2,7 @@
 using NpgsqlTypes;
 using WinFormsApp1.Models;
 using System.Collections.Generic;
+using System;
 using WinFormsApp1.Helpers;
 
 namespace WinFormsApp1.Repositories
@@ -182,7 +183,7 @@ namespace WinFormsApp1.Repositories
                         Username = reader.GetString(2),
                         NoTelp = reader.IsDBNull(3) ? null : reader.GetString(3),
                         IsAktif = reader.GetBoolean(4),
-                        Roles = new List<Userrole>() 
+                        Roles = new List<Userrole>()
                     };
                 }
 

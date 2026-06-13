@@ -35,7 +35,8 @@ namespace WinFormsApp1.Controllers
             bool sukses = TransaksiContext.AdminKonfirmasiGagalBayar(idTransaksi);
             if (sukses)
             {
-                MessageBox.Show("Transaksi dibatalkan! Kopi milik petani otomatis dikembalikan ke status 'Lolos QC' agar bisa dilelang ulang.");
+                MessageBox.Show("Transaksi dibatalkan! Produk milik petani akan dikembalikan.", 
+                    "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             return sukses;
         }
