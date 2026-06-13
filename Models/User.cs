@@ -3,19 +3,32 @@
     public class User
     {
         public int IdUser { get; set; }
-
         public string NamaLengkap { get; set; } = string.Empty;
-
         public string Username { get; set; } = string.Empty;
-
         public string Password { get; set; } = string.Empty;
-
         public string? NoTelp { get; set; }
+        public bool IsAktif { get; set; }
 
-        public bool IsAktif { get; set; } = true;
+        public List<Userrole> Roles { get; set; } = new List<Userrole>();
 
-        public List<string> Roles { get; set; } = new();
+        public User() { }
 
-        public string Role { get; set; } = string.Empty;
+        public User(int idUser, string namaLengkap, string username, string pw, string? noTelp, bool isAktif)
+        {
+            IdUser = idUser;
+            NamaLengkap = namaLengkap;
+            Username = username;
+            Password = pw;
+            NoTelp = noTelp;
+            IsAktif = isAktif;
+            Roles = new List<Userrole>();
+        }
+
+        public bool IsInRole(string role)
+            => Roles.Any(r => r.NamaRole.Equals(role, StringComparison.OrdinalIgnoreCase));
+
+        public override string ToString()
+            => $"[{IdUser}] {NamaLengkap} ({Username})";
     }
+
 }
